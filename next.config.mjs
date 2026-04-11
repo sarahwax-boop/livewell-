@@ -1,0 +1,85 @@
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // ── ESLint ────────────────────────────────────────────────────────────────
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // ── Turbopack (Top-level in Next.js 15) ───────────────────────────────────
+  turbopack: {
+    // Leave empty or add aliases/rules here if needed
+  },
+
+  // ── Images ────────────────────────────────────────────────────────────────
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.geteveren.com",
+        pathname: "/cdn/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+
+  // ── Performance ───────────────────────────────────────────────────────────
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
+  // ── Security headers ──────────────────────────────────────────────────────
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+      {
+        source: "/images/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
+
+  // ── Redirects ─────────────────────────────────────────────────────────────
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/fr",
+        permanent: false,
+      },
+    ];
+  },
+};
+
+export default withNextIntl(nextConfig);
