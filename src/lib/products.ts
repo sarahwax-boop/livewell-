@@ -32,6 +32,89 @@ export interface Product {
 
 export const ALL_PRODUCTS: Product[] = [
   {
+    id: "test",
+    slug: "test",
+    image: "/images/products/radiantglow.webp",
+    gallery: [
+      "/images/products/radiantglow-2.webp",
+      "/images/products/radiantglow-3.webp",
+      "/images/products/radiantglow-4.webp",
+      "/images/products/radiantglow-5.webp",
+    ],
+    bottleClass: "b2",
+    category: ["beauty"],
+    price: 1.00,
+    priceOld: 20.90,
+    save: "20%",
+    rating: 4.7,
+    reviews: 836,
+    featured: true,
+    badge: { fr: "Nouveau", nl: "Nieuw" },
+    affiliateLink: "#",
+    name: { fr: "RadiantGlow Gummies", nl: "RadiantGlow Gummies" },
+    tagline: {
+      fr: "Boost quotidien délicieux pour les cheveux, la peau et les ongles.",
+      nl: "Dagelijkse heerlijke boost voor haar, huid en nagels.",
+    },
+    headline: {
+      fr: "Notre élixir RadiantGlow représente une nouvelle référence dans la science nutricosmétique, avec une synergie d'ingrédients bio-actifs de haute puissance. Ce n'est pas seulement un supplément ; c'est l'évolution ultime de votre routine beauté.",
+      nl: "Onze RadiantGlow-elixer vormt een nieuwe maatstaf in de nutricosmetische wetenschap, met een synergie van hoogwaardige bio-actieve ingrediënten. Het is niet zomaar een supplement; het is de ultieme evolutie van uw schoonheidsritueel.",
+    },
+    bullets: {
+      fr: [
+        "Soutient la brillance naturelle des cheveux, de la peau et des ongles",
+        "Enrichi en biotine, collagène et vitamines essentielles",
+        "Saveur légère et rafraîchissante de fruit de la passion",
+        "Formule propre sans arômes artificiels ni colorants",
+      ],
+      nl: [
+        "Ondersteunt de natuurlijke glans van haar, huid en nagels",
+        "Verrijkt met biotine, collageen en essentiële vitamines",
+        "Lichte en verfrissende passievruchtensmaak",
+        "Zuivere formule zonder kunstmatige aroma's of kleurstoffen",
+      ],
+    },
+    marquee: ["Hair Skin & Nails", "Passion Fruit Flavor", "Clean Formula", "Daily Beauty Support"],
+    whyTitle: { fr: "La beauté <em>commence</em> de l'intérieur.", nl: "Schoonheid begint <em>van binnenuit</em>." },
+    whyText: {
+      fr: ["L'architecture manquante de votre routine beauté. Pas un ajout, mais la fondation définitive. Le véritable éclat est un sous-produit biologique de la santé cellulaire. RadiantGlow ne se contente pas de « couvrir » — il reconstruit. En délivrant une synergie de collagène marin et de biotine de haute puissance directement à votre organisme, nous contournons les limites des soins de la peau traditionnels. Découvrez la distinction d'une formule où chaque milligramme est conçu pour se synchroniser avec les cycles naturels de renouvellement de votre corps."],
+      nl: ["De ontbrekende architectuur in uw schoonheidsritueel. Geen toevoeging, maar de definitieve fundering. Ware glans is een biologisch bijproduct van cellulaire gezondheid. RadiantGlow 'maskeert' niet alleen — het reconstrueert. Door een krachtige synergie van marien collageen en biotine rechtstreeks aan uw systeem te leveren, omzeilen we de beperkingen van traditionele huidverzorging. Ervaar het onderscheid van een formule waarbij elke milligram is ontwikkeld om te synchroniseren met de natuurlijke vernieuwingscycli van uw lichaam."],
+    },
+    benefits: [
+      { icon: "✨", title: { fr: "Éclat naturel", nl: "Natuurlijke glans" }, desc: { fr: "Soutient un teint lumineux et naturellement radieux", nl: "Ondersteunt een stralende, natuurlijk glanzende teint" } },
+      { icon: "💇", title: { fr: "Cheveux forts", nl: "Sterk haar" }, desc: { fr: "Aide à renforcer et nourrir les cheveux de l'intérieur", nl: "Helpt haar van binnenuit te versterken en voeden" } },
+      { icon: "💅", title: { fr: "Ongles solides", nl: "Sterke nagels" }, desc: { fr: "Formule conçue pour des ongles plus forts et résistants", nl: "Formule ontworpen voor sterkere, meer resistente nagels" } },
+      { icon: "🌸", title: { fr: "Peau hydratée", nl: "Gehydrateerde huid" }, desc: { fr: "Soutient l'élasticité et l'hydratation de la peau", nl: "Ondersteunt de elasticiteit en hydratatie van de huid" } },
+    ],
+    differentiators: [
+      { icon: "🍭", title: { fr: "Saveur naturelle", nl: "Natuurlijke smaak" }, desc: { fr: "Arôme naturel de fruit de la passion, sans sucres ajoutés", nl: "Natuurlijk passievruchtaroma, zonder toegevoegde suikers" } },
+      { icon: "✅", title: { fr: "Testé par des tiers", nl: "Derdenpartij getest" }, desc: { fr: "Chaque lot vérifié indépendamment pour la pureté", nl: "Elk lot onafhankelijk gecontroleerd op zuiverheid" } },
+      { icon: "🌱", title: { fr: "Ingrédients propres", nl: "Zuivere ingrediënten" }, desc: { fr: "Sans colorants, arômes ou conservateurs artificiels", nl: "Zonder kunstmatige kleurstoffen, aroma's of conserveermiddelen" } },
+      { icon: "💊", title: { fr: "Biotine 5000mcg", nl: "Biotine 5000mcg" }, desc: { fr: "Dose cliniquement étudiée pour la beauté", nl: "Klinisch bestudeerde dosis voor schoonheid" } },
+      { icon: "🤝", title: { fr: "Collagène marin", nl: "Marien collageen" }, desc: { fr: "Soutient l'élasticité et la fermeté de la peau", nl: "Ondersteunt elasticiteit en stevigheid van de huid" } },
+      { icon: "🔬", title: { fr: "Vitamine C & E", nl: "Vitamine C & E" }, desc: { fr: "Antioxydants puissants pour la protection cellulaire", nl: "Krachtige antioxidanten voor cellulaire bescherming" } },
+    ],
+    ingredients: [
+      { emoji: "💊", name: { fr: "Biotine (5 000 mcg)", nl: "Biotine (5 000 mcg)" }, desc: { fr: "Vitamine B essentielle pour la santé des cheveux, de la peau et des ongles.", nl: "Essentieel B-vitamine voor de gezondheid van haar, huid en nagels." } },
+      { emoji: "🌊", name: { fr: "Collagène marin (100 mg)", nl: "Marien collageen (100 mg)" }, desc: { fr: "Peptides hautement biodisponibles pour l'élasticité de la peau.", nl: "Hoog biobeschikbare peptiden voor huidlasticiteit." } },
+      { emoji: "🍊", name: { fr: "Vitamine C & E", nl: "Vitamine C & E" }, desc: { fr: "Antioxydants qui protègent les cellules du stress oxydatif.", nl: "Antioxidanten die cellen beschermen tegen oxidatieve stress." } },
+    ],
+    descriptionHTML: {
+      fr: `<p>Nos <strong>RadiantGlow Gummies</strong> sont un boost quotidien délicieux pour la santé des cheveux, de la peau et des ongles.</p><p>Formulé avec une saveur rafraîchissante de <strong>fruit de la passion</strong>. Sans arômes artificiels, sans colorants, sans conservateurs†.</p><p style="font-size:12px;color:var(--ink3);margin-top:12px">† Non évalué par les autorités sanitaires.</p>`,
+      nl: `<p>Onze <strong>RadiantGlow Gummies</strong> zijn een dagelijkse, heerlijke boost voor de gezondheid van haar, huid en nagels.</p><p>Geformuleerd met een verfrissende smaak van <strong>passievrucht</strong>. Zonder kunstmatige aroma's, kleurstoffen of conserveermiddelen†.</p><p style="font-size:12px;color:var(--ink3);margin-top:12px">† Niet beoordeeld door gezondheidsautoriteiten.</p>`,
+    },
+    ingredientsHTML: {
+      fr: `<p><strong>Actifs (par 2 gummies) :</strong><br>Vitamine A (sous forme d'acétate de rétinyle), Vitamine C (sous forme d'acide ascorbique), Vitamine D (sous forme de cholécalciférol), Vitamine E (sous forme d'acétate de dl-alpha tocophéryle), Vitamine B-6 (sous forme de chlorhydrate de pyridoxine), Folate, Vitamine B-12 (sous forme de cyanocobalamine), Biotine, Acide pantothénique (sous forme de d-pantothénate de calcium), Iode (sous forme d'iodure de potassium), Zinc (sous forme de citrate de zinc), PABA (acide para-aminobenzoïque), Collagène (poisson), Silicium, Sirop de glucose, Sucre, Glucose, Pectine, Acide citrique, Citrate de sodium, Arôme fruit de la passion, Huile végétale (contient de la cire de carnauba), Concentré de jus de carotte pourpre.</p><p><strong>60 gummies · 30 portions</strong></p>`,
+      nl: `<p><strong>Actieve ingrediënten (per 2 gummies):</strong><br>Vitamine A (als retinylacetaat), Vitamine C (als ascorbinezuur), Vitamine D (als cholecalciferol), Vitamine E (als dl-alfa-tocoferylacetaat), Vitamine B-6 (als pyridoxine HCI), Folaat, Vitamine B-12 (als cyanocobalamine), Biotine, Pantotheenzuur (als calcium-d-pantothenaat), Jodium (als kaliumjodide), Zink (als zinkcitraat), PABA (para-aminobenzoëzuur), Collageen (vis), Silicium, Glucosestroop, Suiker, Glucose, Pectine, Citroenzuur, Natriumcitraat, Passievruchtaroma, Plantaardige olie (bevat carnaubawas), Paarse wortelsapconcentraat.</p><p><strong>60 gummies · 30 porties</strong></p>`,
+    },
+    safetyHTML: {
+      fr: `<p><strong>Mode d'emploi :</strong> Consommer 2 gummies par jour, de préférence pendant un repas.</p><p><strong>Avertissement :</strong> Ne pas dépasser la dose recommandée. Conserver dans un endroit frais et sec, à l'abri de la lumière.</p>`,
+      nl: `<p><strong>Gebruiksaanwijzing:</strong> 2 gummies per dag innemen, bij voorkeur bij een maaltijd.</p><p><strong>Waarschuwing:</strong> Niet de aanbevolen dosis overschrijden. Op een koele, droge en lichte plaats bewaren.</p>`,
+    },
+  },
+   
+
+  {
     id: "radiantglow",
     slug: "radiantglow",
     image: "/images/products/radiantglow.webp",

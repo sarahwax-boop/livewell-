@@ -44,10 +44,48 @@ interface Props {
 
 export default function ContactForm({ locale, labels: l }: Props) {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) throw new Error("Failed");
+      setSubmitted(true);
+    } catch {
+      setError(
+        locale === "fr"
+          ? "Une erreur est survenue. Veuillez réessayer."
+          : "Er is een fout opgetreden. Probeer opnieuw.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -254,8 +292,11 @@ export default function ContactForm({ locale, labels: l }: Props) {
                       <label className="form-label">{l.firstName}</label>
                       <input
                         type="text"
+                        name="firstName"
                         className="form-input"
                         placeholder={l.firstName}
+                        value={form.firstName}
+                        onChange={handleChange}
                         required
                       />
                     </div>
@@ -263,29 +304,41 @@ export default function ContactForm({ locale, labels: l }: Props) {
                       <label className="form-label">{l.lastName}</label>
                       <input
                         type="text"
+                        name="lastName"
                         className="form-input"
                         placeholder={l.lastName}
+                        value={form.lastName}
+                        onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
+
                   <div className="form-group">
                     <label className="form-label">{l.email}</label>
                     <input
                       type="email"
+                      name="email"
                       className="form-input"
                       placeholder="votre@email.be"
+                      value={form.email}
+                      onChange={handleChange}
                       required
                     />
                   </div>
+
                   <div className="form-group">
                     <label className="form-label">{l.subject}</label>
                     <select
+                      name="subject"
                       className="form-input"
                       style={{
                         color: "#fff",
                         background: "rgba(255,255,255,0.06)",
                       }}
+                      value={form.subject}
+                      onChange={handleChange}
+                      required
                     >
                       <option value="" style={{ background: "var(--dark2)" }}>
                         {l.subjectPlaceholder}
@@ -316,14 +369,35 @@ export default function ContactForm({ locale, labels: l }: Props) {
                       </option>
                     </select>
                   </div>
+
                   <div className="form-group">
                     <label className="form-label">{l.message}</label>
                     <textarea
+                      name="message"
                       className="form-textarea"
                       placeholder={l.messagePlaceholder}
+                      value={form.message}
+                      onChange={handleChange}
                       required
                     />
                   </div>
+
+                  {error && (
+                    <p
+                      style={{
+                        color: "#c0392b",
+                        fontSize: 13,
+                        marginBottom: 12,
+                        padding: "10px 14px",
+                        background: "#fdf0f0",
+                        borderRadius: 8,
+                        border: "1px solid #f5c6c6",
+                      }}
+                    >
+                      {error}
+                    </p>
+                  )}
+
                   <button
                     type="submit"
                     className="btn btn-gold"
@@ -331,10 +405,17 @@ export default function ContactForm({ locale, labels: l }: Props) {
                       width: "100%",
                       justifyContent: "center",
                       fontSize: 13,
+                      opacity: loading ? 0.7 : 1,
                     }}
+                    disabled={loading}
                   >
-                    {l.send}
+                    {loading
+                      ? locale === "fr"
+                        ? "Envoi en cours..."
+                        : "Verzenden..."
+                      : l.send}
                   </button>
+
                   <p
                     style={{
                       fontSize: 11,
