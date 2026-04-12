@@ -81,10 +81,10 @@ export default async function Footer({ locale }: Props) {
             <br />
             <br />
             <a
-              href="mailto:support@livewell.be"
+              href="mailto:livewell4shop@gmail.com"
               style={{ color: "rgba(255,255,255,0.5)" }}
             >
-              support@livewell.be
+              livewell4shop@gmail.com
             </a>
           </p>
         </div>

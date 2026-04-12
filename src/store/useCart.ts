@@ -6,6 +6,7 @@ export interface CartItem {
   name:        string;
   price:       number;
   bottleClass: string;
+  image:       string;
   qty:         number;
 }
 
@@ -69,21 +70,19 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name:       "livewell-cart-v1",
-      storage:    createJSONStorage(() => localStorage),
+      name:    "livewell-cart-v2",
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items }),
     }
   )
 );
 
-// ─── Individual hooks (no object selectors = no infinite loop) ───────────────
 export const useCartItems      = () => useCartStore((s) => s.items);
 export const useCartCount      = () => useCartStore((s) => s.items.reduce((a, i) => a + i.qty, 0));
 export const useCartTotal      = () => useCartStore((s) => s.items.reduce((a, i) => a + i.price * i.qty, 0));
 export const useCartIsOpen     = () => useCartStore((s) => s.isOpen);
 export const useRedirectIsOpen = () => useCartStore((s) => s.redirectOpen);
 
-// ─── Individual action hooks (each returns a stable function reference) ───────
 export const useAddItem      = () => useCartStore((s) => s.addItem);
 export const useRemoveItem   = () => useCartStore((s) => s.removeItem);
 export const useUpdateQty    = () => useCartStore((s) => s.updateQty);
@@ -92,7 +91,6 @@ export const useCloseDrawer  = () => useCartStore((s) => s.closeDrawer);
 export const useCheckout     = () => useCartStore((s) => s.checkout);
 export const useCloseRedirect= () => useCartStore((s) => s.closeRedirect);
 
-// ─── Legacy combined hook (kept for compatibility, but use individual hooks above) ─
 export const useCartActions = () => ({
   addItem:       useCartStore.getState().addItem,
   removeItem:    useCartStore.getState().removeItem,
@@ -105,7 +103,6 @@ export const useCartActions = () => ({
   checkout:      useCartStore.getState().checkout,
 });
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 export const FREE_SHIPPING_THRESHOLD = 60;
 
 export function formatEur(n: number, locale: "fr" | "nl" = "fr"): string {

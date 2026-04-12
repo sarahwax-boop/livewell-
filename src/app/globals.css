@@ -405,7 +405,7 @@ footer { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.07); 
 .cart-empty h3 { font-family: var(--serif); font-size: 22px; font-weight: 300; color: #fff; }
 .cart-empty p  { font-size: 13px; color: rgba(255,255,255,0.4); }
 .cart-item { display: flex; gap: 14px; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
-.cart-item-thumb { width: 70px; height: 86px; flex-shrink: 0; border-radius: 10px; background: var(--cream); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.cart-item-thumb { width: 84px; height: 86px; flex-shrink: 0; border-radius: 10px; background: var(--cream); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .cart-item-info { flex: 1; min-width: 0; }
 .cart-item-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .cart-item-name { font-family: var(--serif); font-size: 15px; font-weight: 400; color: #fff; line-height: 1.2; }

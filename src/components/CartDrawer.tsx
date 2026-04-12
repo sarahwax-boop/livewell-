@@ -161,9 +161,15 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
             items.map((item) => (
               <div className="cart-item" key={item.id}>
                 <div className="cart-item-thumb">
-                  <div
-                    className={`bottle ${item.bottleClass}`}
-                    style={{ width: 44, height: 90 }}
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      padding: 6,
+                    }}
                   />
                 </div>
                 <div className="cart-item-info">
@@ -211,20 +217,13 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
                 </span>
               </div>
             </div>
-
-            <PayPalScriptProvider
-              options={{
-                clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
-                currency: "EUR",
-                enableFunding: "applepay,googlepay",
-              }}
+            <Link
+              href={`/${locale}/checkout`}
+              onClick={closeDrawer}
+              className="cart-checkout"
             >
-              <PayPalButtons
-                style={{ layout: "vertical", shape: "rect", label: "pay" }}
-                createOrder={createOrder}
-                onApprove={onApprove}
-              />
-            </PayPalScriptProvider>
+              {t("checkout")}
+            </Link>
           </div>
         )}
       </div>

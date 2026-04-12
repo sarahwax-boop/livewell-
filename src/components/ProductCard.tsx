@@ -27,6 +27,7 @@ export default function ProductCard({ product, locale }: Props) {
       name: product.name[locale],
       price: product.price,
       bottleClass: product.bottleClass,
+      image: product.image,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);

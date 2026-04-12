@@ -86,10 +86,10 @@ export default function ContactForm({ locale, labels: l }: Props) {
                   label: l.emailLabel,
                   content: (
                     <a
-                      href="mailto:support@livewell.be"
+                      href="mailto:livewell4shop@gmail.com"
                       style={{ color: "var(--gold)", fontSize: 14 }}
                     >
-                      support@livewell.be
+                      livewell4shop@gmail.com
                     </a>
                   ),
                 },

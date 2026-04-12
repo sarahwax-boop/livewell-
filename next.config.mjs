@@ -4,28 +4,8 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ── ESLint ────────────────────────────────────────────────────────────────
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
-  // ── Turbopack (Top-level in Next.js 15) ───────────────────────────────────
-  turbopack: {
-    // Leave empty or add aliases/rules here if needed
-  },
-
-  // ── Images ────────────────────────────────────────────────────────────────
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "www.geteveren.com",
-        pathname: "/cdn/**",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.shopify.com",
-      },
       {
         protocol: "https",
         hostname: "**.supabase.co",
@@ -37,12 +17,10 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
-  // ── Performance ───────────────────────────────────────────────────────────
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // ── Security headers ──────────────────────────────────────────────────────
   async headers() {
     return [
       {
@@ -70,7 +48,6 @@ const nextConfig = {
     ];
   },
 
-  // ── Redirects ─────────────────────────────────────────────────────────────
   async redirects() {
     return [
       {
