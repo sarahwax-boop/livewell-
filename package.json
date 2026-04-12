@@ -10,12 +10,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@paypal/react-paypal-js": "^9.1.1",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/postcss": "^4.2.2",
     "autoprefixer": "^10.4.27",
-    "next": "^16.2.3",
+    "next": "15.3.8",
     "next-intl": "^3.26.3",
     "postcss": "^8.5.9",
     "react": "^19.2.5",
