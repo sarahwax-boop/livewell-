@@ -58,6 +58,7 @@ export default function PDPClient({ product, related, locale, labels }: Props) {
       name: product.name[locale],
       price: product.price,
       bottleClass: product.bottleClass,
+      image: product.image, // <--- Add this line!
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
