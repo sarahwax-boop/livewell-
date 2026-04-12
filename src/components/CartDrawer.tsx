@@ -3,19 +3,17 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import {
   useCartItems,
   useCartIsOpen,
   useCloseDrawer,
   useRemoveItem,
   useUpdateQty,
-  useCheckout,
   FREE_SHIPPING_THRESHOLD,
   formatEur,
 } from "@/store/useCart";
 import type { Locale } from "@/i18n/routing";
-
-const AFFILIATE_URL = "https://www.geteveren.com/collections";
 
 export default function CartDrawer({ locale }: { locale: Locale }) {
   const t = useTranslations("Cart");
@@ -24,7 +22,6 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
   const closeDrawer = useCloseDrawer();
   const removeItem = useRemoveItem();
   const updateQty = useUpdateQty();
-  const checkout = useCheckout();
   const panelRef = useRef<HTMLDivElement>(null);
 
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
@@ -49,6 +46,31 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
     if (isOpen) window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
   }, [isOpen, closeDrawer]);
+
+  const createOrder = async () => {
+    const res = await fetch("/api/paypal/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items, total }),
+    });
+    const order = await res.json();
+    return order.id;
+  };
+
+  const onApprove = async (data: { orderID: string }) => {
+    const res = await fetch("/api/paypal/capture-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderID: data.orderID }),
+    });
+    const details = await res.json();
+    if (details.status === "COMPLETED") {
+      closeDrawer();
+      alert(
+        t("paymentSuccess") || "Payment successful! Thank you for your order.",
+      );
+    }
+  };
 
   return (
     <>
@@ -189,13 +211,20 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
                 </span>
               </div>
             </div>
-            <button
-              className="cart-checkout"
-              onClick={() => checkout(AFFILIATE_URL)}
+
+            <PayPalScriptProvider
+              options={{
+                clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+                currency: "EUR",
+                enableFunding: "applepay,googlepay",
+              }}
             >
-              {t("checkout")}
-            </button>
-            <p className="cart-note">{t("affiliateNote")}</p>
+              <PayPalButtons
+                style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                createOrder={createOrder}
+                onApprove={onApprove}
+              />
+            </PayPalScriptProvider>
           </div>
         )}
       </div>
