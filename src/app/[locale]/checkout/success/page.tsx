@@ -1,5 +1,11 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/routing";
+export const dynamic = "force-dynamic"; // 👈 ADD THIS LINE
+
+interface Props {
+  params: Promise<{ locale: Locale }>;
+}
+// ... rest stays the same
 
 interface Props {
   params: Promise<{ locale: Locale }>;
