@@ -40,9 +40,9 @@ export default function CheckoutClient({ locale }: Props) {
     city: "",
     country: "",
   });
+
   const [formError, setFormError] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [formReady, setFormReady] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -62,10 +62,8 @@ export default function CheckoutClient({ locale }: Props) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleValidateAndPay = () => {
-    setFormError("");
-    setEmailError("");
-
+  // Logic to check if form is valid before PayPal opens
+  const isFormValid = () => {
     if (
       !form.firstName ||
       !form.lastName ||
@@ -79,21 +77,17 @@ export default function CheckoutClient({ locale }: Props) {
           ? "Veuillez remplir tous les champs obligatoires."
           : "Vul alle verplichte velden in.",
       );
-      setFormReady(false);
-      return;
+      return false;
     }
-
     if (!validateEmail(form.email)) {
       setEmailError(
         locale === "fr"
           ? "Veuillez entrer une adresse email valide."
           : "Voer een geldig e-mailadres in.",
       );
-      setFormReady(false);
-      return;
+      return false;
     }
-
-    setFormReady(true);
+    return true;
   };
 
   const createOrder = async () => {
@@ -110,33 +104,24 @@ export default function CheckoutClient({ locale }: Props) {
     const res = await fetch("/api/paypal/capture-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderID: data.orderID }),
+      body: JSON.stringify({
+        orderID: data.orderID,
+        // Passing shipping info here so your backend can save it once payment is confirmed
+        shipping: { ...form, phone: `${form.phonePrefix} ${form.phone}` },
+        items,
+        total,
+      }),
     });
 
     const details = await res.json();
     if (details.status === "COMPLETED") {
-      await fetch("/api/save-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shipping: { ...form, phone: `${form.phonePrefix} ${form.phone}` },
-          items,
-          total,
-          paypalOrderId: data.orderID,
-        }),
-      });
-
-      await fetch("/api/send-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shipping: { ...form, phone: `${form.phonePrefix} ${form.phone}` },
-          items,
-          total,
-        }),
-      });
-
       router.push(`/${locale}/checkout/success`);
+    } else {
+      setFormError(
+        locale === "fr"
+          ? "Le paiement a échoué. Veuillez réessayer."
+          : "Betaling mislukt. Probeer het opnieuw.",
+      );
     }
   };
 
@@ -150,6 +135,7 @@ export default function CheckoutClient({ locale }: Props) {
 
   const label = (fr: string, nl: string) => (locale === "fr" ? fr : nl);
 
+  // STYLES
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "12px 16px",
@@ -161,7 +147,6 @@ export default function CheckoutClient({ locale }: Props) {
     background: "var(--cream)",
     outline: "none",
   };
-
   const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: 11,
@@ -171,7 +156,6 @@ export default function CheckoutClient({ locale }: Props) {
     color: "var(--ink2)",
     marginBottom: 6,
   };
-
   const rowStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
@@ -200,8 +184,10 @@ export default function CheckoutClient({ locale }: Props) {
         paddingBottom: 80,
       }}
     >
-      {/* Page hero */}
-      <div className="page-hero" style={{ padding: "60px 40px 40px" }}>
+      <div
+        className="page-hero"
+        style={{ padding: "60px 40px 40px", textAlign: "center" }}
+      >
         <span
           className="eyebrow"
           style={{ justifyContent: "center", display: "flex" }}
@@ -237,7 +223,7 @@ export default function CheckoutClient({ locale }: Props) {
           ← {label("Continuer mes achats", "Verder winkelen")}
         </Link>
 
-        {/* Order summary */}
+        {/* Order Summary Card */}
         <div
           style={{
             background: "#fff",
@@ -260,7 +246,6 @@ export default function CheckoutClient({ locale }: Props) {
           >
             {label("Récapitulatif", "Overzicht")}
           </h2>
-
           {items.map((item) => (
             <div
               key={item.id}
@@ -276,8 +261,8 @@ export default function CheckoutClient({ locale }: Props) {
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div
                   style={{
-                    width: 101,
-                    height: 104,
+                    width: 60,
+                    height: 60,
                     borderRadius: 10,
                     overflow: "hidden",
                     background: "var(--cream2)",
@@ -292,16 +277,13 @@ export default function CheckoutClient({ locale }: Props) {
                     alt={item.name}
                     style={{
                       objectFit: "contain",
-                      padding: 4,
                       width: "100%",
                       height: "100%",
                     }}
                   />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 400, marginBottom: 2 }}>
-                    {item.name}
-                  </div>
+                  <div style={{ fontWeight: 400 }}>{item.name}</div>
                   <div style={{ fontSize: 12, color: "var(--ink3)" }}>
                     × {item.qty}
                   </div>
@@ -312,59 +294,25 @@ export default function CheckoutClient({ locale }: Props) {
               </span>
             </div>
           ))}
-
           <div
             style={{
               borderTop: "1px solid var(--sand)",
               paddingTop: 14,
-              marginTop: 8,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span style={{ fontSize: 13, color: "var(--ink2)" }}>
-              {label("Livraison", "Verzending")}
-            </span>
-            <span
-              style={{ fontSize: 13, color: "var(--gold)", fontWeight: 500 }}
-            >
-              {label("Offerte", "Gratis")}
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
               marginTop: 10,
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            <span
-              style={{
-                fontFamily: "var(--serif)",
-                fontSize: 18,
-                fontWeight: 400,
-                color: "var(--ink)",
-              }}
-            >
+            <span style={{ fontFamily: "var(--serif)", fontSize: 18 }}>
               Total
             </span>
-            <span
-              style={{
-                fontFamily: "var(--serif)",
-                fontSize: 22,
-                fontWeight: 400,
-                color: "var(--ink)",
-              }}
-            >
+            <span style={{ fontFamily: "var(--serif)", fontSize: 22 }}>
               {fmt(total)}
             </span>
           </div>
         </div>
 
-        {/* Shipping form */}
+        {/* Shipping Form Card */}
         <div
           style={{
             background: "#fff",
@@ -379,7 +327,6 @@ export default function CheckoutClient({ locale }: Props) {
               fontFamily: "var(--serif)",
               fontSize: 20,
               fontWeight: 400,
-              color: "var(--ink)",
               marginBottom: 20,
               paddingBottom: 14,
               borderBottom: "1px solid var(--sand)",
@@ -388,7 +335,6 @@ export default function CheckoutClient({ locale }: Props) {
             {label("Informations de livraison", "Leveringsgegevens")}
           </h2>
 
-          {/* Name row */}
           <div style={rowStyle}>
             <div>
               <label style={labelStyle}>
@@ -412,7 +358,6 @@ export default function CheckoutClient({ locale }: Props) {
             </div>
           </div>
 
-          {/* Email */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>{label("Email *", "Email *")}</label>
             <input
@@ -429,7 +374,6 @@ export default function CheckoutClient({ locale }: Props) {
             )}
           </div>
 
-          {/* Phone with prefix */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>
               {label("Téléphone *", "Telefoon *")}
@@ -439,7 +383,7 @@ export default function CheckoutClient({ locale }: Props) {
                 name="phonePrefix"
                 value={form.phonePrefix}
                 onChange={handleChange}
-                style={{ ...inputStyle, width: "auto", flexShrink: 0 }}
+                style={{ ...inputStyle, width: "auto" }}
               >
                 <option value="+32">🇧🇪 +32</option>
                 <option value="+31">🇳🇱 +31</option>
@@ -454,7 +398,6 @@ export default function CheckoutClient({ locale }: Props) {
             </div>
           </div>
 
-          {/* Address */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>{label("Adresse *", "Adres *")}</label>
             <input
@@ -465,17 +408,6 @@ export default function CheckoutClient({ locale }: Props) {
             />
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>{label("Adresse 2", "Adres 2")}</label>
-            <input
-              name="address2"
-              value={form.address2}
-              onChange={handleChange}
-              style={inputStyle}
-            />
-          </div>
-
-          {/* City & Country */}
           <div style={rowStyle}>
             <div>
               <label style={labelStyle}>{label("Ville *", "Stad *")}</label>
@@ -504,7 +436,7 @@ export default function CheckoutClient({ locale }: Props) {
           </div>
         </div>
 
-        {/* Payment */}
+        {/* Payment Card */}
         <div
           style={{
             background: "#fff",
@@ -517,28 +449,18 @@ export default function CheckoutClient({ locale }: Props) {
             style={{
               fontFamily: "var(--serif)",
               fontSize: 20,
-              fontWeight: 400,
-              color: "var(--ink)",
               marginBottom: 6,
             }}
           >
             {label("Moyen de paiement", "Betaalmethode")}
           </h2>
-          <p
-            style={{
-              fontSize: 12,
-              color: "var(--ink3)",
-              marginBottom: 24,
-              letterSpacing: "0.02em",
-            }}
-          >
+          <p style={{ fontSize: 12, color: "var(--ink3)", marginBottom: 24 }}>
             {label(
               "Paiement 100% sécurisé via PayPal",
               "100% veilige betaling via PayPal",
             )}
           </p>
 
-          {/* Errors */}
           {formError && (
             <p
               style={{
@@ -554,69 +476,36 @@ export default function CheckoutClient({ locale }: Props) {
               {formError}
             </p>
           )}
-          {emailError && (
-            <p
-              style={{
-                color: "#c0392b",
-                fontSize: 13,
-                marginBottom: 12,
-                padding: "10px 14px",
-                background: "#fdf0f0",
-                borderRadius: 8,
-                border: "1px solid #f5c6c6",
-              }}
-            >
-              {emailError}
-            </p>
-          )}
 
           <PayPalScriptProvider
             options={{
-              clientId:
-                "AaxB0nPjOU19Tw2VSloSpv1NZfBur9voFFaGaPTUhiUONW3ZMzMwP8U_Eb70O0dlRRIwJ0eh75-AmA-X",
+              clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
               currency: "EUR",
             }}
           >
-            {/* Blocker overlay when form not ready */}
-            {!formReady ? (
-              <div onClick={handleValidateAndPay} style={{ cursor: "pointer" }}>
-                {/* Fake PayPal button look-alike that triggers validation */}
-                <button
-                  onClick={handleValidateAndPay}
-                  style={{
-                    width: "100%",
-                    padding: "14px",
-                    borderRadius: 25,
-                    background: "#FFD140",
-                    border: "none",
-                    fontSize: 16,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    color: "#003087",
-                    marginBottom: 8,
-                  }}
-                >
-                  PayPal
-                </button>
-              </div>
-            ) : (
-              <PayPalButtons
-                style={{
-                  layout: "vertical",
-                  shape: "pill",
-                  label: "pay",
-                  color: "gold",
-                }}
-                createOrder={createOrder}
-                onApprove={onApprove}
-              />
-            )}
+            <PayPalButtons
+              style={{
+                layout: "vertical",
+                shape: "pill",
+                label: "pay",
+                color: "gold",
+              }}
+              // This is the magic: it checks the form before opening the PayPal window
+              onClick={(data, actions) => {
+                if (isFormValid()) {
+                  return actions.resolve();
+                } else {
+                  return actions.reject();
+                }
+              }}
+              createOrder={createOrder}
+              onApprove={onApprove}
+            />
           </PayPalScriptProvider>
 
           <div
             style={{
               display: "flex",
-              alignItems: "center",
               justifyContent: "center",
               gap: 16,
               marginTop: 20,
@@ -624,22 +513,10 @@ export default function CheckoutClient({ locale }: Props) {
               borderTop: "1px solid var(--sand)",
             }}
           >
-            <span
-              style={{
-                fontSize: 11,
-                color: "var(--ink3)",
-                letterSpacing: "0.06em",
-              }}
-            >
+            <span style={{ fontSize: 11, color: "var(--ink3)" }}>
               🔒 {label("Paiement sécurisé SSL", "Beveiligd met SSL")}
             </span>
-            <span
-              style={{
-                fontSize: 11,
-                color: "var(--ink3)",
-                letterSpacing: "0.06em",
-              }}
-            >
+            <span style={{ fontSize: 11, color: "var(--ink3)" }}>
               ✓ {label("Données protégées", "Gegevens beschermd")}
             </span>
           </div>

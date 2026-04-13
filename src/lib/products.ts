@@ -272,7 +272,7 @@ export const ALL_PRODUCTS: Product[] = [
     ],
     bottleClass: "b4",
     category: ["energy", "weight loss"],
-    price: 27.92,
+    price: 27.90,
     priceOld: 34.90,
     save: "20%",
     rating: 4.7,

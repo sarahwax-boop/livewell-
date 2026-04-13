@@ -4,6 +4,17 @@ const PAYPAL_API = "https://api-m.paypal.com";
 const CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!;
 const SECRET = process.env.PAYPAL_SECRET_KEY!;
 
+const PRODUCTS_DATABASE = [
+  { id: "test", price: 27.00 },
+  { id: "radiantglow", price: 34.90 },
+  { id: "berberine", price: 30.00 },
+  { id: "appetite-strips", price: 27.90 },
+  { id: "hangover-strips", price: 27.00 },
+  { id: "nad-booster", price: 28.00 },
+  { id: "mushroom-synergy", price: 34.90 },
+  { id: "mushroomfocusstrip", price: 33.90 },
+];
+
 async function getAccessToken() {
   const res = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
     method: "POST",
@@ -14,18 +25,33 @@ async function getAccessToken() {
     body: "grant_type=client_credentials",
   });
   const data = await res.json();
-  console.log("PayPal token response:", JSON.stringify(data));
   return data.access_token;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("CLIENT_ID:", CLIENT_ID ? "present" : "MISSING");
-    console.log("SECRET:", SECRET ? "present" : "MISSING");
-    const { total } = await req.json();
-    const accessToken = await getAccessToken();
-    console.log("Access token:", accessToken ? "present" : "MISSING");
+    // 1. Get items from the request
+    const body = await req.json();
+    const { items } = body;
 
+    // 2. Calculate secure total inside the POST function
+    const serverSideTotal = items.reduce((acc: number, item: any) => {
+      const product = PRODUCTS_DATABASE.find(p => String(p.id) === String(item.id));
+      const price = product ? product.price : 0;
+      return acc + (price * item.qty);
+    }, 0);
+
+    console.log("Calculated Secure Total:", serverSideTotal);
+
+    // Stop if total is zero (this prevents the window disappearing)
+    if (serverSideTotal <= 0) {
+      console.error("Total is 0. Check if Product IDs match.");
+      return NextResponse.json({ error: "Invalid Total" }, { status: 400 });
+    }
+
+    const accessToken = await getAccessToken();
+
+    // 3. Create the PayPal order
     const res = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
       method: "POST",
       headers: {
@@ -38,7 +64,7 @@ export async function POST(req: NextRequest) {
           {
             amount: {
               currency_code: "EUR",
-              value: total.toFixed(2),
+              value: serverSideTotal.toFixed(2), // Use the secure total here
             },
           },
         ],
@@ -46,8 +72,8 @@ export async function POST(req: NextRequest) {
     });
 
     const order = await res.json();
-    console.log("PayPal order response:", JSON.stringify(order));
     return NextResponse.json(order);
+
   } catch (err) {
     console.error("Create order error:", err);
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
