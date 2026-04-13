@@ -30,28 +30,21 @@ async function getAccessToken() {
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Get items from the request
     const body = await req.json();
-    const { items } = body;
+    const items = body.items || [];
 
-    // 2. Calculate secure total inside the POST function
-    const serverSideTotal = items.reduce((acc: number, item: any) => {
+    // Calculate total from our database
+    const secureTotal = items.reduce((acc: number, item: any) => {
       const product = PRODUCTS_DATABASE.find(p => String(p.id) === String(item.id));
-      const price = product ? product.price : 0;
-      return acc + (price * item.qty);
+      return acc + (product ? product.price * item.qty : 0);
     }, 0);
 
-    console.log("Calculated Secure Total:", serverSideTotal);
-
-    // Stop if total is zero (this prevents the window disappearing)
-    if (serverSideTotal <= 0) {
-      console.error("Total is 0. Check if Product IDs match.");
-      return NextResponse.json({ error: "Invalid Total" }, { status: 400 });
+    if (secureTotal <= 0) {
+      return NextResponse.json({ error: "Total is 0. Check Product IDs." }, { status: 400 });
     }
 
     const accessToken = await getAccessToken();
 
-    // 3. Create the PayPal order
     const res = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
       method: "POST",
       headers: {
@@ -60,22 +53,19 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         intent: "CAPTURE",
-        purchase_units: [
-          {
-            amount: {
-              currency_code: "EUR",
-              value: serverSideTotal.toFixed(2), // Use the secure total here
-            },
+        purchase_units: [{
+          amount: {
+            currency_code: "EUR",
+            value: secureTotal.toFixed(2),
           },
-        ],
+        }],
       }),
     });
 
     const order = await res.json();
     return NextResponse.json(order);
-
   } catch (err) {
-    console.error("Create order error:", err);
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+    console.error("Order Error:", err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
