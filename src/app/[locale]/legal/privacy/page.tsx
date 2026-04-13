@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { Locale } from "@/i18n/routing";
-
-interface Props { params: Promise<{ locale: Locale }> }
+export const dynamic = "force-dynamic";
+interface Props {
+  params: Promise<{ locale: Locale }>;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   return {
     title: locale === "fr" ? "Politique de Confidentialité" : "Privacybeleid",
-    alternates: { languages: { fr: "/fr/legal/privacy", nl: "/nl/legal/privacy" } },
+    alternates: {
+      languages: { fr: "/fr/legal/privacy", nl: "/nl/legal/privacy" },
+    },
   };
 }
 
@@ -115,7 +119,16 @@ export default async function PrivacyPage({ params }: Props) {
     <div style={{ background: "var(--cream)", minHeight: "100vh" }}>
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "80px 40px" }}>
         {/* Breadcrumb */}
-        <nav style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 40, fontSize: 12, color: "var(--ink3)" }}>
+        <nav
+          style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+            marginBottom: 40,
+            fontSize: 12,
+            color: "var(--ink3)",
+          }}
+        >
           <Link href={`/${locale}`} style={{ color: "var(--ink2)" }}>
             {locale === "fr" ? "Accueil" : "Startpagina"}
           </Link>
@@ -124,36 +137,69 @@ export default async function PrivacyPage({ params }: Props) {
         </nav>
 
         {/* Heading */}
-        <h1 style={{
-          fontFamily: "var(--serif)", fontSize: "clamp(36px,5vw,60px)", fontWeight: 300,
-          color: "var(--ink)", marginBottom: 12, letterSpacing: "-0.02em",
-        }}>
+        <h1
+          style={{
+            fontFamily: "var(--serif)",
+            fontSize: "clamp(36px,5vw,60px)",
+            fontWeight: 300,
+            color: "var(--ink)",
+            marginBottom: 12,
+            letterSpacing: "-0.02em",
+          }}
+        >
           {c.title}
         </h1>
-        <p style={{ fontSize: 13, color: "var(--ink3)", marginBottom: 60 }}>{c.updated}</p>
+        <p style={{ fontSize: 13, color: "var(--ink3)", marginBottom: 60 }}>
+          {c.updated}
+        </p>
 
         {/* Sections */}
         {c.sections.map((s, i) => (
           <div key={i} style={{ marginBottom: 40 }}>
-            <h2 style={{
-              fontFamily: "var(--serif)", fontSize: 24, fontWeight: 400,
-              color: "var(--ink)", marginBottom: 12,
-            }}>
+            <h2
+              style={{
+                fontFamily: "var(--serif)",
+                fontSize: 24,
+                fontWeight: 400,
+                color: "var(--ink)",
+                marginBottom: 12,
+              }}
+            >
               {s.h}
             </h2>
-            <p style={{ fontSize: 15, fontWeight: 300, color: "var(--ink2)", lineHeight: 1.8 }}>
+            <p
+              style={{
+                fontSize: 15,
+                fontWeight: 300,
+                color: "var(--ink2)",
+                lineHeight: 1.8,
+              }}
+            >
               {s.p}
             </p>
           </div>
         ))}
 
         {/* Back link */}
-        <div style={{ marginTop: 60, paddingTop: 32, borderTop: "1px solid var(--sand)" }}>
-          <Link href={`/${locale}`} style={{
-            fontFamily: "var(--sans)", fontSize: 13, fontWeight: 500,
-            color: "var(--gold)", letterSpacing: "0.06em",
-          }}>
-            ← {locale === "fr" ? "Retour à l'accueil" : "Terug naar startpagina"}
+        <div
+          style={{
+            marginTop: 60,
+            paddingTop: 32,
+            borderTop: "1px solid var(--sand)",
+          }}
+        >
+          <Link
+            href={`/${locale}`}
+            style={{
+              fontFamily: "var(--sans)",
+              fontSize: 13,
+              fontWeight: 500,
+              color: "var(--gold)",
+              letterSpacing: "0.06em",
+            }}
+          >
+            ←{" "}
+            {locale === "fr" ? "Retour à l'accueil" : "Terug naar startpagina"}
           </Link>
         </div>
       </div>

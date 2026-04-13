@@ -1,8 +1,8 @@
-export const dynamic = "force-dynamic";
-
 import { setRequestLocale } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
 import CheckoutClient from "@/components/CheckoutClient";
+
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ locale: Locale }>;

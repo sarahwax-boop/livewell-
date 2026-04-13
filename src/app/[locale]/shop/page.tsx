@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import ShopClient from "@/components/ShopClient";
-
+export const dynamic = "force-dynamic";
 interface Props {
   params: Promise<{ locale: Locale }>;
 }

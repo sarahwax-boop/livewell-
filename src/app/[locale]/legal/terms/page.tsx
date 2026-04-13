@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { Locale } from "@/i18n/routing";
-
+export const dynamic = "force-dynamic";
 interface Props {
   params: Promise<{ locale: Locale }>;
 }

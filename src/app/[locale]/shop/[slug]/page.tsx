@@ -6,7 +6,7 @@ import type { Locale } from "@/i18n/routing";
 import { ALL_PRODUCTS, getProductBySlug } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
 import PDPClient from "@/components/PDPClient";
-
+export const dynamic = "force-dynamic";
 interface Props {
   params: Promise<{ locale: Locale; slug: string }>;
 }
