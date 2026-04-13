@@ -14,13 +14,17 @@ async function getAccessToken() {
     body: "grant_type=client_credentials",
   });
   const data = await res.json();
+  console.log("PayPal token response:", JSON.stringify(data));
   return data.access_token;
 }
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("CLIENT_ID:", CLIENT_ID ? "present" : "MISSING");
+    console.log("SECRET:", SECRET ? "present" : "MISSING");
     const { total } = await req.json();
     const accessToken = await getAccessToken();
+    console.log("Access token:", accessToken ? "present" : "MISSING");
 
     const res = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
       method: "POST",
@@ -42,6 +46,7 @@ export async function POST(req: NextRequest) {
     });
 
     const order = await res.json();
+    console.log("PayPal order response:", JSON.stringify(order));
     return NextResponse.json(order);
   } catch (err) {
     console.error("Create order error:", err);
