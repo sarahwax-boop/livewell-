@@ -42,49 +42,61 @@ export default function CheckoutClient({ locale }: Props) {
   });
   const [formError, setFormError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [formReady, setFormReady] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (e.target.name === "email") setEmailError("");
+    setFormError("");
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setForm((prev) => ({ ...prev, phone: val }));
+    setFormError("");
   };
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const isFormValid = () => {
-    return (
-      form.firstName &&
-      form.lastName &&
-      form.email &&
-      form.phone &&
-      form.address1 &&
-      form.city &&
-      form.country
-    );
-  };
+  const handleValidateAndPay = () => {
+    setFormError("");
+    setEmailError("");
 
-  const createOrder = async () => {
+    if (
+      !form.firstName ||
+      !form.lastName ||
+      !form.phone ||
+      !form.address1 ||
+      !form.city ||
+      !form.country
+    ) {
+      setFormError(
+        locale === "fr"
+          ? "Veuillez remplir tous les champs obligatoires."
+          : "Vul alle verplichte velden in.",
+      );
+      setFormReady(false);
+      return;
+    }
+
     if (!validateEmail(form.email)) {
       setEmailError(
         locale === "fr"
           ? "Veuillez entrer une adresse email valide."
           : "Voer een geldig e-mailadres in.",
       );
-      throw new Error("Invalid email");
+      setFormReady(false);
+      return;
     }
-    if (!isFormValid()) {
-      setFormError(
-        locale === "fr"
-          ? "Veuillez remplir tous les champs obligatoires."
-          : "Vul alle verplichte velden in.",
-      );
-      throw new Error("Form incomplete");
-    }
-    setFormError("");
-    setEmailError("");
+
+    setFormReady(true);
+  };
+
+  const createOrder = async () => {
     const res = await fetch("/api/paypal/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -133,10 +145,6 @@ export default function CheckoutClient({ locale }: Props) {
       router.push(`/${locale}/shop`);
     }
   }, [items.length, locale, router]);
-
-  useEffect(() => {
-    console.log("PayPal ID:", process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID);
-  }, []);
 
   if (items.length === 0) return null;
 
@@ -440,7 +448,7 @@ export default function CheckoutClient({ locale }: Props) {
                 name="phone"
                 type="tel"
                 value={form.phone}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
                 style={{ ...inputStyle, flex: 1 }}
               />
             </div>
@@ -494,22 +502,6 @@ export default function CheckoutClient({ locale }: Props) {
               </select>
             </div>
           </div>
-
-          {formError && (
-            <p
-              style={{
-                color: "#c0392b",
-                fontSize: 13,
-                marginTop: 4,
-                padding: "10px 14px",
-                background: "#fdf0f0",
-                borderRadius: 8,
-                border: "1px solid #f5c6c6",
-              }}
-            >
-              {formError}
-            </p>
-          )}
         </div>
 
         {/* Payment */}
@@ -546,6 +538,38 @@ export default function CheckoutClient({ locale }: Props) {
             )}
           </p>
 
+          {/* Errors */}
+          {formError && (
+            <p
+              style={{
+                color: "#c0392b",
+                fontSize: 13,
+                marginBottom: 12,
+                padding: "10px 14px",
+                background: "#fdf0f0",
+                borderRadius: 8,
+                border: "1px solid #f5c6c6",
+              }}
+            >
+              {formError}
+            </p>
+          )}
+          {emailError && (
+            <p
+              style={{
+                color: "#c0392b",
+                fontSize: 13,
+                marginBottom: 12,
+                padding: "10px 14px",
+                background: "#fdf0f0",
+                borderRadius: 8,
+                border: "1px solid #f5c6c6",
+              }}
+            >
+              {emailError}
+            </p>
+          )}
+
           <PayPalScriptProvider
             options={{
               clientId:
@@ -553,16 +577,40 @@ export default function CheckoutClient({ locale }: Props) {
               currency: "EUR",
             }}
           >
-            <PayPalButtons
-              style={{
-                layout: "vertical",
-                shape: "pill",
-                label: "pay",
-                color: "gold",
-              }}
-              createOrder={createOrder}
-              onApprove={onApprove}
-            />
+            {/* Blocker overlay when form not ready */}
+            {!formReady ? (
+              <div onClick={handleValidateAndPay} style={{ cursor: "pointer" }}>
+                {/* Fake PayPal button look-alike that triggers validation */}
+                <button
+                  onClick={handleValidateAndPay}
+                  style={{
+                    width: "100%",
+                    padding: "14px",
+                    borderRadius: 25,
+                    background: "#FFD140",
+                    border: "none",
+                    fontSize: 16,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    color: "#003087",
+                    marginBottom: 8,
+                  }}
+                >
+                  PayPal
+                </button>
+              </div>
+            ) : (
+              <PayPalButtons
+                style={{
+                  layout: "vertical",
+                  shape: "pill",
+                  label: "pay",
+                  color: "gold",
+                }}
+                createOrder={createOrder}
+                onApprove={onApprove}
+              />
+            )}
           </PayPalScriptProvider>
 
           <div
