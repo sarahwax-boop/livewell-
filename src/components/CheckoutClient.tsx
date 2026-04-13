@@ -84,7 +84,6 @@ export default function CheckoutClient({ locale }: Props) {
 
     const details = await res.json();
     if (details.status === "COMPLETED") {
-      // Save to Supabase
       await fetch("/api/save-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,7 +95,6 @@ export default function CheckoutClient({ locale }: Props) {
         }),
       });
 
-      // Send email
       await fetch("/api/send-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -343,7 +341,6 @@ export default function CheckoutClient({ locale }: Props) {
             {label("Informations de livraison", "Leveringsgegevens")}
           </h2>
 
-          {/* Name row */}
           <div style={rowStyle}>
             <div>
               <label style={labelStyle}>
@@ -369,7 +366,6 @@ export default function CheckoutClient({ locale }: Props) {
             </div>
           </div>
 
-          {/* Email & Phone row */}
           <div style={rowStyle}>
             <div>
               <label style={labelStyle}>{label("Email *", "Email *")}</label>
@@ -397,7 +393,6 @@ export default function CheckoutClient({ locale }: Props) {
             </div>
           </div>
 
-          {/* Address */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>{label("Adresse *", "Adres *")}</label>
             <input
@@ -423,7 +418,6 @@ export default function CheckoutClient({ locale }: Props) {
             />
           </div>
 
-          {/* City & Country row */}
           <div style={rowStyle}>
             <div>
               <label style={labelStyle}>{label("Ville *", "Stad *")}</label>
@@ -498,6 +492,7 @@ export default function CheckoutClient({ locale }: Props) {
             )}
           </p>
 
+          {console.log("PayPal ID:", process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID)}
           <PayPalScriptProvider
             options={{
               clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
