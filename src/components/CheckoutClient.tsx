@@ -15,6 +15,7 @@ interface ShippingForm {
   firstName: string;
   lastName: string;
   email: string;
+  phonePrefix: string;
   phone: string;
   address1: string;
   address2: string;
@@ -32,6 +33,7 @@ export default function CheckoutClient({ locale }: Props) {
     firstName: "",
     lastName: "",
     email: "",
+    phonePrefix: "+32",
     phone: "",
     address1: "",
     address2: "",
@@ -39,9 +41,17 @@ export default function CheckoutClient({ locale }: Props) {
     country: "",
   });
   const [formError, setFormError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (e.target.name === "email") setEmailError("");
+  };
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
   const isFormValid = () => {
@@ -57,6 +67,14 @@ export default function CheckoutClient({ locale }: Props) {
   };
 
   const createOrder = async () => {
+    if (!validateEmail(form.email)) {
+      setEmailError(
+        locale === "fr"
+          ? "Veuillez entrer une adresse email valide."
+          : "Voer een geldig e-mailadres in.",
+      );
+      throw new Error("Invalid email");
+    }
     if (!isFormValid()) {
       setFormError(
         locale === "fr"
@@ -66,6 +84,7 @@ export default function CheckoutClient({ locale }: Props) {
       throw new Error("Form incomplete");
     }
     setFormError("");
+    setEmailError("");
     const res = await fetch("/api/paypal/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -88,7 +107,7 @@ export default function CheckoutClient({ locale }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          shipping: form,
+          shipping: { ...form, phone: `${form.phonePrefix} ${form.phone}` },
           items,
           total,
           paypalOrderId: data.orderID,
@@ -98,7 +117,11 @@ export default function CheckoutClient({ locale }: Props) {
       await fetch("/api/send-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shipping: form, items, total }),
+        body: JSON.stringify({
+          shipping: { ...form, phone: `${form.phonePrefix} ${form.phone}` },
+          items,
+          total,
+        }),
       });
 
       router.push(`/${locale}/checkout/success`);
@@ -147,6 +170,19 @@ export default function CheckoutClient({ locale }: Props) {
     gap: 12,
     marginBottom: 16,
   };
+
+  const countries =
+    locale === "fr"
+      ? [
+          { value: "", label: "Sélectionnez un pays" },
+          { value: "BE", label: "Belgique" },
+          { value: "NL", label: "Pays-Bas" },
+        ]
+      : [
+          { value: "", label: "Selecteer een land" },
+          { value: "BE", label: "België" },
+          { value: "NL", label: "Nederland" },
+        ];
 
   return (
     <div
@@ -344,6 +380,7 @@ export default function CheckoutClient({ locale }: Props) {
             {label("Informations de livraison", "Leveringsgegevens")}
           </h2>
 
+          {/* Name row */}
           <div style={rowStyle}>
             <div>
               <label style={labelStyle}>
@@ -354,7 +391,6 @@ export default function CheckoutClient({ locale }: Props) {
                 value={form.firstName}
                 onChange={handleChange}
                 style={inputStyle}
-                placeholder="Jean"
               />
             </div>
             <div>
@@ -364,38 +400,53 @@ export default function CheckoutClient({ locale }: Props) {
                 value={form.lastName}
                 onChange={handleChange}
                 style={inputStyle}
-                placeholder="Dupont"
               />
             </div>
           </div>
 
-          <div style={rowStyle}>
-            <div>
-              <label style={labelStyle}>{label("Email *", "Email *")}</label>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
+          {/* Email */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>{label("Email *", "Email *")}</label>
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              style={inputStyle}
+            />
+            {emailError && (
+              <p style={{ color: "#e74c3c", fontSize: 12, marginTop: 4 }}>
+                {emailError}
+              </p>
+            )}
+          </div>
+
+          {/* Phone with prefix */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>
+              {label("Téléphone *", "Telefoon *")}
+            </label>
+            <div style={{ display: "flex", gap: 8 }}>
+              <select
+                name="phonePrefix"
+                value={form.phonePrefix}
                 onChange={handleChange}
-                style={inputStyle}
-                placeholder="jean@email.com"
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>
-                {label("Téléphone *", "Telefoon *")}
-              </label>
+                style={{ ...inputStyle, width: "auto", flexShrink: 0 }}
+              >
+                <option value="+32">🇧🇪 +32</option>
+                <option value="+31">🇳🇱 +31</option>
+              </select>
               <input
                 name="phone"
                 type="tel"
                 value={form.phone}
                 onChange={handleChange}
-                style={inputStyle}
-                placeholder="+32 470 00 00 00"
+                style={{ ...inputStyle, flex: 1 }}
               />
             </div>
           </div>
 
+          {/* Address */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>{label("Adresse *", "Adres *")}</label>
             <input
@@ -403,7 +454,6 @@ export default function CheckoutClient({ locale }: Props) {
               value={form.address1}
               onChange={handleChange}
               style={inputStyle}
-              placeholder={label("Rue et numéro", "Straat en huisnummer")}
             />
           </div>
 
@@ -414,13 +464,10 @@ export default function CheckoutClient({ locale }: Props) {
               value={form.address2}
               onChange={handleChange}
               style={inputStyle}
-              placeholder={label(
-                "Appartement, bâtiment... (optionnel)",
-                "Appartement, gebouw... (optioneel)",
-              )}
             />
           </div>
 
+          {/* City & Country */}
           <div style={rowStyle}>
             <div>
               <label style={labelStyle}>{label("Ville *", "Stad *")}</label>
@@ -429,18 +476,22 @@ export default function CheckoutClient({ locale }: Props) {
                 value={form.city}
                 onChange={handleChange}
                 style={inputStyle}
-                placeholder="Bruxelles"
               />
             </div>
             <div>
               <label style={labelStyle}>{label("Pays *", "Land *")}</label>
-              <input
+              <select
                 name="country"
                 value={form.country}
                 onChange={handleChange}
                 style={inputStyle}
-                placeholder="Belgique"
-              />
+              >
+                {countries.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

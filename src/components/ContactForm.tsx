@@ -46,11 +46,15 @@ export default function ContactForm({ locale, labels: l }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    phonePrefix: "+32",
+    phone: "",
+    country: "",
     subject: "",
     message: "",
   });
@@ -61,18 +65,36 @@ export default function ContactForm({ locale, labels: l }: Props) {
     >,
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (e.target.name === "email") setEmailError("");
+  };
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+    setEmailError("");
 
+    if (!validateEmail(form.email)) {
+      setEmailError(
+        locale === "fr"
+          ? "Veuillez entrer une adresse email valide."
+          : "Voer een geldig e-mailadres in.",
+      );
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          phone: `${form.phonePrefix} ${form.phone}`,
+        }),
       });
 
       if (!res.ok) throw new Error("Failed");
@@ -87,6 +109,31 @@ export default function ContactForm({ locale, labels: l }: Props) {
       setLoading(false);
     }
   };
+
+  const selectStyle: React.CSSProperties = {
+    color: "#fff",
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: 10,
+    padding: "12px 16px",
+    fontFamily: "var(--sans)",
+    fontSize: 14,
+    width: "100%",
+    outline: "none",
+  };
+
+  const countries =
+    locale === "fr"
+      ? [
+          { value: "", label: "Sélectionnez un pays" },
+          { value: "BE", label: "Belgique" },
+          { value: "NL", label: "Pays-Bas" },
+        ]
+      : [
+          { value: "", label: "Selecteer een land" },
+          { value: "BE", label: "België" },
+          { value: "NL", label: "Nederland" },
+        ];
 
   return (
     <>
@@ -281,6 +328,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
+                  {/* Name row */}
                   <div
                     style={{
                       display: "grid",
@@ -294,7 +342,6 @@ export default function ContactForm({ locale, labels: l }: Props) {
                         type="text"
                         name="firstName"
                         className="form-input"
-                        placeholder={l.firstName}
                         value={form.firstName}
                         onChange={handleChange}
                         required
@@ -306,7 +353,6 @@ export default function ContactForm({ locale, labels: l }: Props) {
                         type="text"
                         name="lastName"
                         className="form-input"
-                        placeholder={l.lastName}
                         value={form.lastName}
                         onChange={handleChange}
                         required
@@ -314,19 +360,87 @@ export default function ContactForm({ locale, labels: l }: Props) {
                     </div>
                   </div>
 
+                  {/* Email */}
                   <div className="form-group">
                     <label className="form-label">{l.email}</label>
                     <input
                       type="email"
                       name="email"
                       className="form-input"
-                      placeholder="votre@email.be"
                       value={form.email}
                       onChange={handleChange}
                       required
                     />
+                    {emailError && (
+                      <p
+                        style={{ color: "#e74c3c", fontSize: 12, marginTop: 4 }}
+                      >
+                        {emailError}
+                      </p>
+                    )}
                   </div>
 
+                  {/* Phone with prefix */}
+                  <div className="form-group">
+                    <label className="form-label">
+                      {locale === "fr" ? "Téléphone" : "Telefoon"}
+                    </label>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <select
+                        name="phonePrefix"
+                        value={form.phonePrefix}
+                        onChange={handleChange}
+                        style={{ ...selectStyle, width: "auto", flexShrink: 0 }}
+                      >
+                        <option
+                          value="+32"
+                          style={{ background: "var(--dark2)" }}
+                        >
+                          🇧🇪 +32
+                        </option>
+                        <option
+                          value="+31"
+                          style={{ background: "var(--dark2)" }}
+                        >
+                          🇳🇱 +31
+                        </option>
+                      </select>
+                      <input
+                        type="tel"
+                        name="phone"
+                        className="form-input"
+                        value={form.phone}
+                        onChange={handleChange}
+                        style={{ flex: 1 }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Country */}
+                  <div className="form-group">
+                    <label className="form-label">
+                      {locale === "fr" ? "Pays" : "Land"}
+                    </label>
+                    <select
+                      name="country"
+                      value={form.country}
+                      onChange={handleChange}
+                      style={selectStyle}
+                      required
+                    >
+                      {countries.map((c) => (
+                        <option
+                          key={c.value}
+                          value={c.value}
+                          style={{ background: "var(--dark2)" }}
+                        >
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Subject */}
                   <div className="form-group">
                     <label className="form-label">{l.subject}</label>
                     <select
@@ -370,12 +484,12 @@ export default function ContactForm({ locale, labels: l }: Props) {
                     </select>
                   </div>
 
+                  {/* Message */}
                   <div className="form-group">
                     <label className="form-label">{l.message}</label>
                     <textarea
                       name="message"
                       className="form-textarea"
-                      placeholder={l.messagePlaceholder}
                       value={form.message}
                       onChange={handleChange}
                       required
