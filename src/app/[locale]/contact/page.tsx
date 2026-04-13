@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
 import ContactForm from "@/components/ContactForm";
-
+export function generateStaticParams() {
+  return [{ locale: "fr" }, { locale: "nl" }];
+}
 interface Props {
   params: Promise<{ locale: Locale }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale); // 👈 ADD THIS
   const t = await getTranslations({ locale, namespace: "Contact" });
   return {
     title: locale === "fr" ? "Contact" : "Contact",
@@ -19,6 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ContactPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale); // 👈 ADD THIS
   const t = await getTranslations({ locale, namespace: "Contact" });
 
   const labels = {
