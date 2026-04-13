@@ -113,7 +113,6 @@ export default function CheckoutClient({ locale }: Props) {
       console.error("Checkout Error:", err);
     }
   };
-
   const onApprove = async (data: { orderID: string }) => {
     const res = await fetch("/api/paypal/capture-order", {
       method: "POST",
