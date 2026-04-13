@@ -15,57 +15,56 @@ const PRODUCTS_DATABASE = [
   { id: "mushroomfocusstrip", price: 33.90 },
 ];
 
-async function getAccessToken() {
-  const res = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${SECRET}`).toString("base64")}`,
-    },
-    body: "grant_type=client_credentials",
-  });
-  const data = await res.json();
-  return data.access_token;
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const items = body.items || [];
+    console.log("LOG: Received Body:", JSON.stringify(body));
 
-    // Calculate total from our database
+    const items = body.items || [];
+    
     const secureTotal = items.reduce((acc: number, item: any) => {
       const product = PRODUCTS_DATABASE.find(p => String(p.id) === String(item.id));
+      if (!product) console.log(`LOG: Mismatch! ID ${item.id} not found.`);
       return acc + (product ? product.price * item.qty : 0);
     }, 0);
 
+    console.log("LOG: Secure Total Calculated:", secureTotal);
+
     if (secureTotal <= 0) {
-      return NextResponse.json({ error: "Total is 0. Check Product IDs." }, { status: 400 });
+      return NextResponse.json({ error: "Total is 0" }, { status: 400 });
     }
 
-    const accessToken = await getAccessToken();
-
-    const res = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
+    // Get Token
+    const auth = Buffer.from(`${CLIENT_ID}:${SECRET}`).toString("base64");
+    const tokenRes = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: `Basic ${auth}` },
+      body: "grant_type=client_credentials",
+    });
+
+    const tokenData = await tokenRes.json();
+    const accessToken = tokenData.access_token;
+
+    if (!accessToken) {
+      console.log("LOG: PayPal Token Failed:", JSON.stringify(tokenData));
+      return NextResponse.json({ error: "Auth Failed" }, { status: 500 });
+    }
+
+    // Create Order
+    const orderRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
       body: JSON.stringify({
         intent: "CAPTURE",
-        purchase_units: [{
-          amount: {
-            currency_code: "EUR",
-            value: secureTotal.toFixed(2),
-          },
-        }],
+        purchase_units: [{ amount: { currency_code: "EUR", value: secureTotal.toFixed(2) } }],
       }),
     });
 
-    const order = await res.json();
+    const order = await orderRes.json();
     return NextResponse.json(order);
-  } catch (err) {
-    console.error("Order Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+
+  } catch (err: any) {
+    console.error("CRASH ERROR:", err.message);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
