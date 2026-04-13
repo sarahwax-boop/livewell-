@@ -5,7 +5,11 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
 import { FEATURED_PRODUCTS, formatPrice } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
-
+export const dynamic = "force-dynamic"; // 👈 ADD THIS
+export function generateStaticParams() {
+  // 👈 ADD THIS
+  return [{ locale: "fr" }, { locale: "nl" }];
+}
 interface Props {
   params: Promise<{ locale: Locale }>;
 }
