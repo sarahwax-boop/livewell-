@@ -4,6 +4,9 @@ import type { Locale } from "@/i18n/routing";
 interface Props {
   params: Promise<{ locale: Locale }>;
 }
+export function generateStaticParams() {
+  return [{ locale: "fr" }, { locale: "nl" }];
+}
 
 export default async function SuccessPage({ params }: Props) {
   const { locale } = await params;
