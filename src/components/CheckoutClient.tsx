@@ -111,6 +111,10 @@ export default function CheckoutClient({ locale }: Props) {
     }
   }, [items.length, locale, router]);
 
+  useEffect(() => {
+    console.log("PayPal ID:", process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID);
+  }, []);
+
   if (items.length === 0) return null;
 
   const label = (fr: string, nl: string) => (locale === "fr" ? fr : nl);
@@ -172,7 +176,6 @@ export default function CheckoutClient({ locale }: Props) {
       </div>
 
       <div style={{ maxWidth: 600, margin: "0 auto", padding: "40px 24px 0" }}>
-        {/* Back link */}
         <Link
           href={`/${locale}/shop`}
           style={{
@@ -492,7 +495,6 @@ export default function CheckoutClient({ locale }: Props) {
             )}
           </p>
 
-          {console.log("PayPal ID:", process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID)}
           <PayPalScriptProvider
             options={{
               clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
