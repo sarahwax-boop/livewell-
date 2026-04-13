@@ -497,7 +497,8 @@ export default function CheckoutClient({ locale }: Props) {
 
           <PayPalScriptProvider
             options={{
-              clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+              clientId:
+                "AaxB0nPjOU19Tw2VSloSpv1NZfBur9voFFaGaPTUhiUONW3ZMzMwP8U_Eb70O0dlRRIwJ0eh75-AmA-X",
               currency: "EUR",
             }}
           >
