@@ -18,27 +18,26 @@ const PRODUCTS_DATABASE = [
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log("LOG: Received Body:", JSON.stringify(body));
-
     const items = body.items || [];
-    
+
+    // Calculate total securely from our internal list
     const secureTotal = items.reduce((acc: number, item: any) => {
       const product = PRODUCTS_DATABASE.find(p => String(p.id) === String(item.id));
-      if (!product) console.log(`LOG: Mismatch! ID ${item.id} not found.`);
       return acc + (product ? product.price * item.qty : 0);
     }, 0);
 
-    console.log("LOG: Secure Total Calculated:", secureTotal);
-
     if (secureTotal <= 0) {
-      return NextResponse.json({ error: "Total is 0" }, { status: 400 });
+      return NextResponse.json({ error: "Total is 0. Check product IDs." }, { status: 400 });
     }
 
-    // Get Token
+    // Get PayPal Access Token
     const auth = Buffer.from(`${CLIENT_ID}:${SECRET}`).toString("base64");
     const tokenRes = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: `Basic ${auth}` },
+      headers: { 
+        "Content-Type": "application/x-www-form-urlencoded", 
+        Authorization: `Basic ${auth}` 
+      },
       body: "grant_type=client_credentials",
     });
 
@@ -46,17 +45,24 @@ export async function POST(req: NextRequest) {
     const accessToken = tokenData.access_token;
 
     if (!accessToken) {
-      console.log("LOG: PayPal Token Failed:", JSON.stringify(tokenData));
-      return NextResponse.json({ error: "Auth Failed" }, { status: 500 });
+      return NextResponse.json({ error: "PayPal Authentication Failed" }, { status: 500 });
     }
 
-    // Create Order
+    // Create the actual PayPal Order
     const orderRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+      headers: { 
+        "Content-Type": "application/json", 
+        Authorization: `Bearer ${accessToken}` 
+      },
       body: JSON.stringify({
         intent: "CAPTURE",
-        purchase_units: [{ amount: { currency_code: "EUR", value: secureTotal.toFixed(2) } }],
+        purchase_units: [{
+          amount: {
+            currency_code: "EUR",
+            value: secureTotal.toFixed(2),
+          },
+        }],
       }),
     });
 
@@ -64,7 +70,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(order);
 
   } catch (err: any) {
-    console.error("CRASH ERROR:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
