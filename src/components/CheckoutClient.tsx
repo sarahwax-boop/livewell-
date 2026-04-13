@@ -415,6 +415,7 @@ export default function CheckoutClient({ locale }: Props) {
         </div>
 
         {/* Payment Section with Hardcoded ID */}
+        {/* Payment Card */}
         <div
           style={{
             background: "#fff",
@@ -423,9 +424,22 @@ export default function CheckoutClient({ locale }: Props) {
             border: "1px solid var(--sand)",
           }}
         >
-          <h2 style={{ fontSize: 20, marginBottom: 24 }}>
-            {label("Paiement", "Betaling")}
+          <h2
+            style={{
+              fontSize: 20,
+              marginBottom: 6,
+              fontFamily: "var(--serif)",
+            }}
+          >
+            {label("Moyen de paiement", "Betaalmethode")}
           </h2>
+          <p style={{ fontSize: 12, color: "var(--ink3)", marginBottom: 24 }}>
+            {label(
+              "Paiement 100% sécurisé via PayPal",
+              "100% veilige betaling via PayPal",
+            )}
+          </p>
+
           {formError && (
             <p
               style={{
@@ -434,29 +448,55 @@ export default function CheckoutClient({ locale }: Props) {
                 padding: 12,
                 borderRadius: 8,
                 marginBottom: 12,
+                fontSize: 13,
               }}
             >
               {formError}
             </p>
           )}
 
-          <PayPalScriptProvider
-            options={{
-              clientId:
-                "AaxB0nPjOU19Tw2VSloSpv1NZfBur9voFFaGaPTUhiUONV3ZMzMwP8U_Eb70O0dlRRIwJ0eh75-AmA-X",
-              currency: "EUR",
-              intent: "capture",
+          <div style={{ minHeight: "150px" }}>
+            <PayPalScriptProvider
+              options={{
+                clientId:
+                  "AaxB0nPjOU19Tw2VSloSpv1NZfBur9voFFaGaPTUHiUONV3ZMzMwP8U_Eb70O0dlRRIwJ0eh75-AmA-X",
+                currency: "EUR",
+                intent: "capture",
+              }}
+            >
+              <PayPalButtons
+                style={{
+                  layout: "vertical",
+                  shape: "pill",
+                  color: "gold",
+                  label: "pay",
+                }}
+                onClick={(data, actions) =>
+                  isFormValid() ? actions.resolve() : actions.reject()
+                }
+                createOrder={createOrder}
+                onApprove={onApprove}
+              />
+            </PayPalScriptProvider>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 16,
+              marginTop: 20,
+              paddingTop: 16,
+              borderTop: "1px solid var(--sand)",
             }}
           >
-            <PayPalButtons
-              style={{ layout: "vertical", shape: "pill", color: "gold" }}
-              onClick={(data, actions) =>
-                isFormValid() ? actions.resolve() : actions.reject()
-              }
-              createOrder={createOrder}
-              onApprove={onApprove}
-            />
-          </PayPalScriptProvider>
+            <span style={{ fontSize: 11, color: "var(--ink3)" }}>
+              🔒 {label("Paiement sécurisé SSL", "Beveiligd met SSL")}
+            </span>
+            <span style={{ fontSize: 11, color: "var(--ink3)" }}>
+              ✓ {label("Données protégées", "Gegevens beschermd")}
+            </span>
+          </div>
         </div>
       </div>
     </div>
