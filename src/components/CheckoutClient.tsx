@@ -90,28 +90,19 @@ export default function CheckoutClient({ locale }: Props) {
     return true;
   };
 
-const createOrder = async () => {
-  // Ensure we are sending an array of items with 'id' and 'qty'
-  const formattedItems = items.map(item => ({
-    id: item.id || item.slug, // Use whatever property matches your PRODUCTS_DATABASE (e.g., "test")
-    qty: item.quantity || 1
-  }));
-
-  const res = await fetch("/api/paypal/create-order", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items: formattedItems }), // Sending the specific list the server wants
-  });
-
-  const order = await res.json();
-
-  if (!order.id) {
-    console.error("PayPal Error:", order);
-    throw new Error("Could not get Order ID from server");
-  }
-
-  return order.id;
-};
+  const createOrder = async () => {
+    try {
+      const res = await fetch("/api/paypal/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          // Ensure 'cart' matches what your store (Zustand) provides
+          items: cart.map((item) => ({
+            id: item.id, // Must match PRODUCTS_DATABASE in route.ts
+            qty: item.quantity,
+          })),
+        }),
+      });
 
       const data = await res.json();
       if (data.id) return data.id; // This is the Order ID PayPal needs
