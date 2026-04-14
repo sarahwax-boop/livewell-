@@ -461,12 +461,22 @@ export default function CheckoutClient({ locale }: Props) {
                 clientId:
                   "AaxB0nPjOU19Tw2VSloSpv1NZfBur9voFFaGaPTUHiUONV3ZMzMwP8U_Eb70O0dlRRIwJ0eh75-AmA-X",
                 currency: "EUR",
-                // We are REMOVING 'intent' and other extra options for a moment
+                intent: "capture",
+                // This helps PayPal identify the request source
+                "data-client-token": "",
+                components: "buttons",
+                "enable-funding": "card", // This forces the Credit Card option to show too
               }}
             >
               <PayPalButtons
-                style={{ layout: "vertical", shape: "pill", color: "gold" }}
-                // We are temporarily removing the onClick validation to test loading
+                style={{
+                  layout: "vertical",
+                  shape: "pill",
+                  color: "gold",
+                  label: "pay",
+                }}
+                // Force the button to render even if the form isn't full yet
+                disabled={false}
                 createOrder={createOrder}
                 onApprove={onApprove}
               />
