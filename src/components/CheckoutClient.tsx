@@ -461,19 +461,12 @@ export default function CheckoutClient({ locale }: Props) {
                 clientId:
                   "AaxB0nPjOU19Tw2VSloSpv1NZfBur9voFFaGaPTUHiUONV3ZMzMwP8U_Eb70O0dlRRIwJ0eh75-AmA-X",
                 currency: "EUR",
-                intent: "capture",
+                // We are REMOVING 'intent' and other extra options for a moment
               }}
             >
               <PayPalButtons
-                style={{
-                  layout: "vertical",
-                  shape: "pill",
-                  color: "gold",
-                  label: "pay",
-                }}
-                onClick={(data, actions) =>
-                  isFormValid() ? actions.resolve() : actions.reject()
-                }
+                style={{ layout: "vertical", shape: "pill", color: "gold" }}
+                // We are temporarily removing the onClick validation to test loading
                 createOrder={createOrder}
                 onApprove={onApprove}
               />
