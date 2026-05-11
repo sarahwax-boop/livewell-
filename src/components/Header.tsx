@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCartCount, useToggleDrawer } from "@/store/useCart";
 import type { Locale } from "@/i18n/routing";
 
@@ -12,14 +12,11 @@ interface Props {
   locale: Locale;
 }
 
-export default function Header({ locale: localeProp }: Props) {
-  // useLocale() reads from NextIntlClientProvider — always correct for current route
-  const locale = useLocale() as Locale;
+export default function Header({ locale }: Props) {
   const t = useTranslations("Nav");
   const a = useTranslations("Announce");
   const m = useTranslations("MobileMenu");
   const pathname = usePathname();
-  const router = useRouter();
   const cartCount = useCartCount();
   const toggleDrawer = useToggleDrawer();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -40,25 +37,17 @@ export default function Header({ locale: localeProp }: Props) {
     };
   }, [mobileOpen]);
 
-  const switchLocale = (next: Locale) => {
-    if (next === locale) return;
-    const segs = pathname.split("/");
-    segs[1] = next;
-    router.push(segs.join("/") || `/${next}`);
-  };
-
   const navLinks = [
-    { label: t("home"), href: `/${locale}` },
-    { label: t("shop"), href: `/${locale}/shop` },
-    { label: t("about"), href: `/${locale}#about` },
-    { label: t("contact"), href: `/${locale}/contact` },
+    { label: t("home"), href: "/" },
+    { label: t("shop"), href: "/shop" },
+    { label: t("about"), href: "/#about" },
+    { label: t("contact"), href: "/contact" },
   ];
 
   const isActive = (href: string) =>
-    href === `/${locale}`
-      ? pathname === href
-      : pathname.startsWith(href.split("#")[0]) &&
-        href.split("#")[0] !== `/${locale}`;
+    href === "/"
+      ? pathname === "/"
+      : pathname.startsWith(href.split("#")[0]) && href.split("#")[0] !== "/";
 
   return (
     <>
@@ -87,7 +76,7 @@ export default function Header({ locale: localeProp }: Props) {
           ))}
         </ul>
 
-        <Link href={`/${locale}`} className="nav-logo">
+        <Link href="/" className="nav-logo">
           <Image
             src="/images/logo.svg"
             alt="Live Well"
@@ -98,19 +87,6 @@ export default function Header({ locale: localeProp }: Props) {
         </Link>
 
         <div className="nav-right">
-          <button
-            className={`nav-lang${locale === "fr" ? " active" : ""}`}
-            onClick={() => switchLocale("fr")}
-          >
-            FR
-          </button>
-          <span className="nav-lang-sep">|</span>
-          <button
-            className={`nav-lang${locale === "nl" ? " active" : ""}`}
-            onClick={() => switchLocale("nl")}
-          >
-            NL
-          </button>
           <button
             className="cart-btn"
             onClick={toggleDrawer}
@@ -154,7 +130,7 @@ export default function Header({ locale: localeProp }: Props) {
       >
         <div className="mob-menu-head">
           <Link
-            href={`/${locale}`}
+            href="/"
             className="mob-menu-logo"
             onClick={() => setMobileOpen(false)}
           >
@@ -168,7 +144,7 @@ export default function Header({ locale: localeProp }: Props) {
           <button
             className="mob-menu-close"
             onClick={() => setMobileOpen(false)}
-            aria-label="Sluiten"
+            aria-label="Close"
           >
             ✕
           </button>
@@ -206,28 +182,8 @@ export default function Header({ locale: localeProp }: Props) {
         </nav>
 
         <div className="mob-menu-footer">
-          <div className="mob-menu-lang">
-            <button
-              className={`mob-lang-btn${locale === "fr" ? " active" : ""}`}
-              onClick={() => {
-                switchLocale("fr");
-                setMobileOpen(false);
-              }}
-            >
-              FR
-            </button>
-            <button
-              className={`mob-lang-btn${locale === "nl" ? " active" : ""}`}
-              onClick={() => {
-                switchLocale("nl");
-                setMobileOpen(false);
-              }}
-            >
-              NL
-            </button>
-          </div>
           <Link
-            href={`/${locale}/shop`}
+            href="/shop"
             className="mob-shop-btn"
             onClick={() => setMobileOpen(false)}
           >

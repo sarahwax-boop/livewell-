@@ -1,53 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { ALL_PRODUCTS } from "@/lib/products";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const PAYPAL_API = "https://api-m.paypal.com";
+const CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!;
+const SECRET = process.env.PAYPAL_SECRET_KEY!;
 
 export async function POST(req: NextRequest) {
   try {
-    const { shipping, items, total } = await req.json();
+    const body = await req.json();
+    const items = body.items || [];
 
-    const itemsList = items
-      .map((item: any) => `${item.name} × ${item.qty} — €${(item.price * item.qty).toFixed(2)}`)
-      .join("\n");
+    // Calculate total securely from our single source of truth
+    const secureTotal = items.reduce((acc: number, item: any) => {
+      const product = ALL_PRODUCTS.find(
+        (p) => String(p.id) === String(item.id),
+      );
+      return acc + (product ? product.price * item.qty : 0);
+    }, 0);
 
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: process.env.GMAIL_USER,
-      subject: `🛒 Nouvelle commande — ${shipping.firstName} ${shipping.lastName}`,
-      text: `
-NOUVELLE COMMANDE
+    if (secureTotal <= 0) {
+      return NextResponse.json(
+        { error: "Total is 0. Check product IDs." },
+        { status: 400 },
+      );
+    }
 
-CLIENT
-------
-Nom: ${shipping.firstName} ${shipping.lastName}
-Email: ${shipping.email}
-Téléphone: ${shipping.phone}
-
-ADRESSE DE LIVRAISON
---------------------
-${shipping.address1}
-${shipping.address2 ? shipping.address2 + "\n" : ""}${shipping.city}
-${shipping.country}
-
-COMMANDE
---------
-${itemsList}
-
-Total: €${total.toFixed(2)}
-Livraison: Offerte
-      `,
+    // Get PayPal Access Token
+    const auth = Buffer.from(`${CLIENT_ID}:${SECRET}`).toString("base64");
+    const tokenRes = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${auth}`,
+      },
+      body: "grant_type=client_credentials",
     });
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("Email error:", err);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    const tokenData = await tokenRes.json();
+    const accessToken = tokenData.access_token;
+
+    if (!accessToken) {
+      console.error("PayPal token response:", tokenData);
+      return NextResponse.json(
+        { error: "PayPal Authentication Failed" },
+        { status: 500 },
+      );
+    }
+
+    // Create the actual PayPal Order
+    const orderRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "EUR",
+              value: secureTotal.toFixed(2),
+            },
+          },
+        ],
+      }),
+    });
+
+    const order = await orderRes.json();
+
+    if (!orderRes.ok) {
+      console.error("PayPal create-order error:", order);
+      return NextResponse.json(
+        { error: order.message || "Failed to create PayPal order" },
+        { status: orderRes.status },
+      );
+    }
+
+    return NextResponse.json(order);
+  } catch (err: any) {
+    console.error("Create order error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

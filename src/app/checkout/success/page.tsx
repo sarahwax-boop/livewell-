@@ -1,21 +1,8 @@
 import Link from "next/link";
-import type { Locale } from "@/i18n/routing";
+
 export const dynamic = "force-dynamic";
 
-interface Props {
-  params: Promise<{ locale: Locale }>;
-}
-// ... rest stays the same
-
-interface Props {
-  params: Promise<{ locale: Locale }>;
-}
-export function generateStaticParams() {
-  return [{ locale: "en" }];
-}
-
-export default async function SuccessPage({ params }: Props) {
-  const { locale } = await params;
+export default function SuccessPage() {
   return (
     <div
       style={{

@@ -4,15 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAddItem } from "@/store/useCart";
-import type { Product, Locale } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
 
 interface Props {
   product: Product;
-  locale: Locale;
+  locale: string;
 }
 
-export default function ProductCard({ product, locale }: Props) {
+export default function ProductCard({ product }: Props) {
   const [added, setAdded] = useState(false);
   const addItem = useAddItem();
 
@@ -24,7 +24,7 @@ export default function ProductCard({ product, locale }: Props) {
     e.stopPropagation();
     addItem({
       id: product.id,
-      name: product.name[locale],
+      name: product.name.en,
       price: product.price,
       bottleClass: product.bottleClass,
       image: product.image,
@@ -33,59 +33,49 @@ export default function ProductCard({ product, locale }: Props) {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const addLabel = locale === "fr" ? "Ajouter" : "Toevoegen";
-  const addedLabel = locale === "fr" ? "Ajouté ✓" : "Toegevoegd ✓";
-
   return (
     <Link
-      href={`/${locale}/shop/${product.slug}`}
+      href={`/shop/${product.slug}`}
       className="product-card"
       style={{ textDecoration: "none" }}
     >
       {product.badge && (
-        <span className="product-badge">{product.badge[locale]}</span>
+        <span className="product-badge">{product.badge.en}</span>
       )}
 
       <div className="product-img-wrap">
         <Image
           src={product.image}
-          alt={product.name[locale]}
+          alt={product.name.en}
           width={280}
           height={260}
-          style={{ objectFit: "contain", padding: "16px" }}
+          style={{ objectFit: "contain", width: "100%", height: "100%" }}
         />
-        <span className="product-hover-cta">
-          {locale === "fr" ? "Voir le produit" : "Bekijk product"}
-        </span>
+        <span className="product-hover-cta">View product</span>
       </div>
 
       <div className="product-info">
         <div className="product-rating">
           <span className="stars">{stars(product.rating)}</span>
           <span className="rating-text">
-            {product.rating} | {product.reviews?.toLocaleString()}{" "}
-            {locale === "fr" ? "clients" : "klanten"}
+            {product.rating} | {product.reviews?.toLocaleString()} customers
           </span>
         </div>
-        <h3 className="product-name">{product.name[locale]}</h3>
+        <h3 className="product-name">{product.name.en}</h3>
         <p className="product-desc">
-          {product.tagline[locale].slice(0, 72)}
-          {product.tagline[locale].length > 72 ? "…" : ""}
+          {product.tagline.en.slice(0, 72)}
+          {product.tagline.en.length > 72 ? "…" : ""}
         </p>
         <div className="product-price-row">
           <div>
-            <span className="price-old">
-              {formatPrice(product.priceOld, locale)}
-            </span>
-            <span className="price-sale">
-              {formatPrice(product.price, locale)}
-            </span>
+            <span className="price-old">{formatPrice(product.priceOld)}</span>
+            <span className="price-sale">{formatPrice(product.price)}</span>
           </div>
           <button
             className={`btn-add${added ? " added" : ""}`}
             onClick={handleAdd}
           >
-            {added ? addedLabel : addLabel}
+            {added ? "Added ✓" : "Add"}
           </button>
         </div>
       </div>

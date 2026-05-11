@@ -90,33 +90,21 @@ export default function PDPClient({ product, related, locale, labels }: Props) {
                       position: "relative",
                     }}
                   >
-                    <div
+                    <Image
+                      src={allImgs[activeImg]}
+                      alt={`${product.name[locale]} ${activeImg + 1}`}
+                      width={480}
+                      height={480}
                       style={{
+                        objectFit: "contain",
                         width: "100%",
                         height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
                       }}
-                    >
-                      <Image
-                        src={allImgs[activeImg]}
-                        alt={`${product.name[locale]} ${activeImg + 1}`}
-                        width={480}
-                        height={480}
-                        style={{
-                          objectFit: "contain",
-                          padding: "0px",
-                          width: "100%",
-                          height: "100%",
-                        }}
-                        priority={activeImg === 0}
-                        onError={(e) => {
-                          // Fallback to main image if gallery image not found
-                          (e.target as HTMLImageElement).src = product.image;
-                        }}
-                      />
-                    </div>
+                      priority={activeImg === 0}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = product.image;
+                      }}
+                    />
                     {/* Image counter */}
                     <span className="pdp-img-counter">
                       {activeImg + 1} / {allImgs.length}
@@ -135,7 +123,7 @@ export default function PDPClient({ product, related, locale, labels }: Props) {
                           border: "none",
                           cursor: "pointer",
                           background: "var(--cream)",
-                          padding: 4,
+                          padding: 0,
                         }}
                       >
                         <Image
@@ -174,10 +162,10 @@ export default function PDPClient({ product, related, locale, labels }: Props) {
 
             <div className="pdp-price-row">
               <span className="pdp-price-sale">
-                {formatPrice(product.price, locale)}
+                {formatPrice(product.price)}
               </span>
               <span className="pdp-price-old">
-                {formatPrice(product.priceOld, locale)}
+                {formatPrice(product.priceOld)}
               </span>
               <span className="pdp-save">
                 {labels.save} {product.save}
@@ -266,11 +254,11 @@ export default function PDPClient({ product, related, locale, labels }: Props) {
               <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
             ))}
             <Link
-              href={`/${locale}/shop`}
+              href="/shop"
               className="btn btn-dark"
               style={{ marginTop: 28, alignSelf: "flex-start" }}
             >
-              {locale === "fr" ? "Explorer la gamme" : "Ontdek het gamma"}
+              Explore the range
             </Link>
           </div>
         </div>

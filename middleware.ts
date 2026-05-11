@@ -1,10 +1,12 @@
-import createMiddleware from "next-intl/middleware";
-import { routing } from "./src/i18n/routing";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default createMiddleware(routing);
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next();
+  response.headers.set("x-next-intl-locale", "en");
+  return response;
+}
 
 export const config = {
-  matcher: [
-    "/((?!_next|_vercel|api|.*\\..*).*)",
-  ],
+  matcher: ["/((?!_next|api|.*\\..*).*)", "/"],
 };

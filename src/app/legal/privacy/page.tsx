@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { Locale } from "@/i18n/routing";
+
 export const dynamic = "force-dynamic";
-interface Props {
-  params: Promise<{ locale: Locale }>;
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -60,13 +57,10 @@ const CONTENT = {
   ],
 };
 
-export default async function PrivacyPage({ params }: Props) {
-  const { locale } = await params;
-
+export default function PrivacyPage() {
   return (
     <div style={{ background: "var(--cream)", minHeight: "100vh" }}>
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "80px 40px" }}>
-        {/* Breadcrumb */}
         <nav
           style={{
             display: "flex",
@@ -77,14 +71,10 @@ export default async function PrivacyPage({ params }: Props) {
             color: "var(--ink3)",
           }}
         >
-          <Link href="/" style={{ color: "var(--ink2)" }}>
-            Home
-          </Link>
+          <Link href="/" style={{ color: "var(--ink2)" }}>Home</Link>
           <span>›</span>
           <span style={{ color: "var(--ink)" }}>{CONTENT.title}</span>
         </nav>
-
-        {/* Heading */}
         <h1
           style={{
             fontFamily: "var(--serif)",
@@ -100,8 +90,6 @@ export default async function PrivacyPage({ params }: Props) {
         <p style={{ fontSize: 13, color: "var(--ink3)", marginBottom: 60 }}>
           {CONTENT.updated}
         </p>
-
-        {/* Sections */}
         {CONTENT.sections.map((s, i) => (
           <div key={i} style={{ marginBottom: 40 }}>
             <h2
@@ -127,15 +115,7 @@ export default async function PrivacyPage({ params }: Props) {
             </p>
           </div>
         ))}
-
-        {/* Back link */}
-        <div
-          style={{
-            marginTop: 60,
-            paddingTop: 32,
-            borderTop: "1px solid var(--sand)",
-          }}
-        >
+        <div style={{ marginTop: 60, paddingTop: 32, borderTop: "1px solid var(--sand)" }}>
           <Link
             href="/"
             style={{

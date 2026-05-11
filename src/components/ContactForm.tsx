@@ -52,7 +52,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
     firstName: "",
     lastName: "",
     email: "",
-    phonePrefix: "+32",
+    phonePrefix: "+353",
     phone: "",
     country: "",
     subject: "",
@@ -78,11 +78,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
     setEmailError("");
 
     if (!validateEmail(form.email)) {
-      setEmailError(
-        locale === "fr"
-          ? "Veuillez entrer une adresse email valide."
-          : "Voer een geldig e-mailadres in.",
-      );
+      setEmailError("Please enter a valid email address.");
       return;
     }
 
@@ -100,11 +96,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
       if (!res.ok) throw new Error("Failed");
       setSubmitted(true);
     } catch {
-      setError(
-        locale === "fr"
-          ? "Une erreur est survenue. Veuillez réessayer."
-          : "Er is een fout opgetreden. Probeer opnieuw.",
-      );
+      setError("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -122,18 +114,15 @@ export default function ContactForm({ locale, labels: l }: Props) {
     outline: "none",
   };
 
-  const countries =
-    locale === "fr"
-      ? [
-          { value: "", label: "Sélectionnez un pays" },
-          { value: "BE", label: "Belgique" },
-          { value: "NL", label: "Pays-Bas" },
-        ]
-      : [
-          { value: "", label: "Selecteer een land" },
-          { value: "BE", label: "België" },
-          { value: "NL", label: "Nederland" },
-        ];
+  const countries = [
+    { value: "", label: "Select a country" },
+    { value: "IE", label: "Ireland" },
+    { value: "GB", label: "United Kingdom" },
+    { value: "BE", label: "Belgium" },
+    { value: "NL", label: "Netherlands" },
+    { value: "FR", label: "France" },
+    { value: "DE", label: "Germany" },
+  ];
 
   return (
     <>
@@ -382,9 +371,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
 
                   {/* Phone with prefix */}
                   <div className="form-group">
-                    <label className="form-label">
-                      {locale === "fr" ? "Téléphone" : "Telefoon"}
-                    </label>
+                    <label className="form-label">Phone</label>
                     <div style={{ display: "flex", gap: 8 }}>
                       <select
                         name="phonePrefix"
@@ -392,18 +379,12 @@ export default function ContactForm({ locale, labels: l }: Props) {
                         onChange={handleChange}
                         style={{ ...selectStyle, width: "auto", flexShrink: 0 }}
                       >
-                        <option
-                          value="+32"
-                          style={{ background: "var(--dark2)" }}
-                        >
-                          🇧🇪 +32
-                        </option>
-                        <option
-                          value="+31"
-                          style={{ background: "var(--dark2)" }}
-                        >
-                          🇳🇱 +31
-                        </option>
+                        <option value="+353" style={{ background: "var(--dark2)" }}>🇮🇪 +353</option>
+                        <option value="+44" style={{ background: "var(--dark2)" }}>🇬🇧 +44</option>
+                        <option value="+32" style={{ background: "var(--dark2)" }}>🇧🇪 +32</option>
+                        <option value="+31" style={{ background: "var(--dark2)" }}>🇳🇱 +31</option>
+                        <option value="+33" style={{ background: "var(--dark2)" }}>🇫🇷 +33</option>
+                        <option value="+49" style={{ background: "var(--dark2)" }}>🇩🇪 +49</option>
                       </select>
                       <input
                         type="tel"
@@ -418,9 +399,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
 
                   {/* Country */}
                   <div className="form-group">
-                    <label className="form-label">
-                      {locale === "fr" ? "Pays" : "Land"}
-                    </label>
+                    <label className="form-label">Country</label>
                     <select
                       name="country"
                       value={form.country}
@@ -523,11 +502,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
                     }}
                     disabled={loading}
                   >
-                    {loading
-                      ? locale === "fr"
-                        ? "Envoi en cours..."
-                        : "Verzenden..."
-                      : l.send}
+                    {loading ? "Sending..." : l.send}
                   </button>
 
                   <p
@@ -541,7 +516,7 @@ export default function ContactForm({ locale, labels: l }: Props) {
                   >
                     {l.privacyNote}{" "}
                     <Link
-                      href={`/${locale}/legal/privacy`}
+                      href="/legal/privacy"
                       style={{ color: "rgba(255,255,255,0.4)" }}
                     >
                       {l.privacyLink}

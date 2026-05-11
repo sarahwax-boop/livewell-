@@ -68,7 +68,7 @@ export async function getServerUser() {
 }
 
 // ─── Helper: require auth ─────────────────────────────────────────────────────
-export async function requireAuth(redirectTo = "/fr") {
+export async function requireAuth(redirectTo = "/") {
   const { redirect } = await import("next/navigation");
   const user = await getServerUser();
   if (!user) redirect(redirectTo);

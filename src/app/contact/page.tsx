@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import type { Locale } from "@/i18n/routing";
 import ContactForm from "@/components/ContactForm";
 
-export const dynamic = "force-dynamic"; //
-export function generateStaticParams() {
-  return [{ locale: "en" }];
-}
-interface Props {
-  params: Promise<{ locale: Locale }>;
-}
+export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "Contact" });
+export async function generateMetadata(): Promise<Metadata> {
+  setRequestLocale("en");
+  const t = await getTranslations({ locale: "en", namespace: "Contact" });
   return {
     title: "Contact",
     description: t("sub"),
@@ -22,10 +14,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ContactPage({ params }: Props) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "Contact" });
+export default async function ContactPage() {
+  setRequestLocale("en");
+  const t = await getTranslations({ locale: "en", namespace: "Contact" });
 
   const labels = {
     eyebrow: t("eyebrow"),
@@ -60,5 +51,5 @@ export default async function ContactPage({ params }: Props) {
     success: t("success"),
   };
 
-  return <ContactForm locale={locale} labels={labels} />;
+  return <ContactForm locale="en" labels={labels} />;
 }

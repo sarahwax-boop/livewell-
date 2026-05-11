@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import type { Locale } from "@/i18n/routing";
 import { ALL_PRODUCTS, getProductBySlug } from "@/lib/products";
 import PDPClient from "@/components/PDPClient";
+
 export const dynamic = "force-dynamic";
+
 interface Props {
-  params: Promise<{ locale: Locale; slug: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return ALL_PRODUCTS.map((p) => ({ locale: "en", slug: p.slug }));
+  return ALL_PRODUCTS.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -25,11 +26,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { locale, slug } = await params;
+  const { slug } = await params;
+  setRequestLocale("en");
   const product = getProductBySlug(slug);
   if (!product) notFound();
 
-  const t = await getTranslations({ locale, namespace: "Product" });
+  const t = await getTranslations({ locale: "en", namespace: "Product" });
 
   const labels = {
     addToCart: t("addToCart"),
@@ -50,13 +52,13 @@ export default async function ProductPage({ params }: Props) {
     crumbShop: t("breadcrumbShop"),
   };
 
-  const related = ALL_PRODUCTS.filter((p) => p.id !== product.id).slice(0, 3);
+  const related = ALL_PRODUCTS.filter((p) => p.id !== product!.id).slice(0, 3);
 
   return (
     <PDPClient
-      product={product}
+      product={product!}
       related={related}
-      locale={locale}
+      locale="en"
       labels={labels}
     />
   );

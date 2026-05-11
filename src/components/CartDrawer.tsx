@@ -29,7 +29,7 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
   const pct = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const rem = Math.max(FREE_SHIPPING_THRESHOLD - total, 0);
   const isEmpty = items.length === 0;
-  const fmt = (n: number) => formatEur(n, locale);
+  const fmt = (n: number) => formatEur(n);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -116,7 +116,7 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
           <button
             className="cart-close"
             onClick={closeDrawer}
-            aria-label="Fermer"
+            aria-label="Close"
           >
             ✕
           </button>
@@ -140,7 +140,7 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
               <h3>{t("empty")}</h3>
               <p>{t("emptyHint")}</p>
               <Link
-                href={`/${locale}/shop`}
+                href="/shop"
                 onClick={closeDrawer}
                 style={{
                   marginTop: 8,
@@ -218,7 +218,7 @@ export default function CartDrawer({ locale }: { locale: Locale }) {
               </div>
             </div>
             <Link
-              href={`/${locale}/checkout`}
+              href="/checkout"
               onClick={closeDrawer}
               className="cart-checkout"
             >

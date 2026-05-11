@@ -2,44 +2,25 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import type { Locale } from "@/i18n/routing";
-import { FEATURED_PRODUCTS, formatPrice } from "@/lib/products";
+import { FEATURED_PRODUCTS } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
-export const dynamic = "force-dynamic"; // 👈 ADD THIS
-export function generateStaticParams() {
-  return [{ locale: "en" }];
-}
-interface Props {
-  params: Promise<{ locale: Locale }>;
-}
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "Hero" });
-  return {
-    alternates: { canonical: "/" },
-  };
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: { canonical: "/" } };
 }
 
-export default async function HomePage({ params }: Props) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "Home" });
-  const hr = await getTranslations({ locale, namespace: "Hero" });
-
-  const shopHref = "/shop";
+export default async function HomePage() {
+  setRequestLocale("en");
+  const t = await getTranslations({ locale: "en", namespace: "Home" });
+  const hr = await getTranslations({ locale: "en", namespace: "Hero" });
 
   const trustCards = [
     { img: "/images/pro2.webp", cls: "tc1", h: t("trust1H"), p: t("trust1P") },
     { img: "/images/pure.webp", cls: "tc2", h: t("trust2H"), p: t("trust2P") },
     { img: "/images/inno.webp", cls: "tc3", h: t("trust3H"), p: t("trust3P") },
-    {
-      img: "/images/clinic.webp",
-      cls: "tc4",
-      h: t("trust4H"),
-      p: t("trust4P"),
-    },
+    { img: "/images/clinic.webp", cls: "tc4", h: t("trust4H"), p: t("trust4P") },
   ];
 
   const perks = [
@@ -62,7 +43,7 @@ export default async function HomePage({ params }: Props) {
         </h1>
         <p className="hero-sub">{hr("sub")}</p>
         <div className="hero-btns">
-          <Link href={shopHref} className="btn btn-white">
+          <Link href="/shop" className="btn btn-white">
             {hr("ctaShop")}
           </Link>
           <Link href="/#about" className="btn btn-outline">
@@ -84,12 +65,12 @@ export default async function HomePage({ params }: Props) {
         </div>
         <div className="products-grid">
           {FEATURED_PRODUCTS.map((p) => (
-            <ProductCard key={p.id} product={p} locale={locale} />
+            <ProductCard key={p.id} product={p} locale="en" />
           ))}
         </div>
         <div style={{ textAlign: "center", marginTop: 44 }}>
           <Link
-            href={shopHref}
+            href="/shop"
             style={{
               fontSize: 13,
               fontWeight: 400,
@@ -111,7 +92,7 @@ export default async function HomePage({ params }: Props) {
           {t("saleH1")}&nbsp;{t("saleH2")}
         </h2>
         <p className="sale-sub">{t("saleSub")}</p>
-        <Link href={shopHref} className="btn btn-gold">
+        <Link href="/shop" className="btn btn-gold">
           {t("saleCta")}
         </Link>
       </section>
@@ -127,18 +108,12 @@ export default async function HomePage({ params }: Props) {
             <p>
               {t("aboutP2")} <strong>{t("aboutHighlight")}</strong>
             </p>
-            <Link
-              href={shopHref}
-              className="btn btn-dark"
-              style={{ marginTop: 32 }}
-            >
+            <Link href="/shop" className="btn btn-dark" style={{ marginTop: 32 }}>
               {t("exploreCta")}
             </Link>
           </div>
           <div className="about-img">
-            <p className="about-quote">
-              {t("aboutQuote")}
-            </p>
+            <p className="about-quote">{t("aboutQuote")}</p>
           </div>
         </div>
       </section>
@@ -155,7 +130,7 @@ export default async function HomePage({ params }: Props) {
             <p>{t("glowP1")}</p>
             <p>{t("glowP2")}</p>
             <Link
-              href={shopHref}
+              href="/shop"
               className="btn btn-white"
               style={{ marginTop: 28, alignSelf: "flex-start" }}
             >
@@ -211,7 +186,7 @@ export default async function HomePage({ params }: Props) {
                 </div>
               ))}
             </div>
-            <Link href={shopHref} className="btn btn-dark">
+            <Link href="/shop" className="btn btn-dark">
               {t("bundleCta")}
             </Link>
           </div>

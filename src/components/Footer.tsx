@@ -1,26 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import type { Locale } from "@/i18n/routing";
-
-interface Props {
-  locale: Locale;
-}
-
-export default async function Footer({ locale }: Props) {
-  // Server component must use getTranslations (async), not useTranslations
-  const t = await getTranslations({ locale, namespace: "Footer" });
-  const n = await getTranslations({ locale, namespace: "Nav" });
+export default async function Footer() {
+  const t = await getTranslations("Footer");
+  const n = await getTranslations("Nav");
 
   const menuLinks = [
-    { label: n("home"), href: `/${locale}` },
-    { label: n("shop"), href: `/${locale}/shop` },
-    { label: n("contact"), href: `/${locale}/contact` },
+    { label: n("home"), href: "/" },
+    { label: n("shop"), href: "/shop" },
+    { label: n("contact"), href: "/contact" },
   ];
 
   const legalLinks = [
-    { label: t("terms"), href: `/${locale}/legal/terms` },
-    { label: t("privacy"), href: `/${locale}/legal/privacy` },
+    { label: t("terms"), href: "/legal/terms" },
+    { label: t("privacy"), href: "/legal/privacy" },
   ];
 
   return (
@@ -75,9 +68,9 @@ export default async function Footer({ locale }: Props) {
               lineHeight: 1.6,
             }}
           >
-            Live Well SRL
+            Live Well Ltd
             <br />
-            {locale === "fr" ? "Bruxelles, Belgique" : "Brussel, België"}
+            Dublin, Ireland
             <br />
             <br />
             <a
@@ -88,23 +81,6 @@ export default async function Footer({ locale }: Props) {
             </a>
           </p>
         </div>
-      </div>
-
-      {/* Lang bar */}
-      <div className="lang-bar">
-        <span>{locale === "fr" ? "Langue / Taal" : "Taal / Langue"}</span>
-        <Link
-          href="/fr"
-          className={`lang-pill${locale === "fr" ? " active" : ""}`}
-        >
-          FR
-        </Link>
-        <Link
-          href="/nl"
-          className={`lang-pill${locale === "nl" ? " active" : ""}`}
-        >
-          NL
-        </Link>
       </div>
 
       {/* Bottom */}

@@ -1,8 +1,5 @@
 import Link from "next/link";
 
-// Note: locale is available from the URL segment — we derive it from the pathname
-// This file handles 404s within the [locale] segment
-
 export default function NotFound() {
   return (
     <div style={{
@@ -27,7 +24,7 @@ export default function NotFound() {
         fontFamily: "var(--sans)", fontSize: 15, fontWeight: 300,
         color: "rgba(255,255,255,0.45)", marginBottom: 40, maxWidth: 400, lineHeight: 1.7,
       }}>
-        This page doesn't exist or has been moved. Return to the home page to continue.
+        This page doesn&apos;t exist or has been moved. Return to the home page to continue.
       </p>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
         <Link href="/" className="btn btn-white">Back to home</Link>

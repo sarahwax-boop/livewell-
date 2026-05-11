@@ -105,8 +105,8 @@ export const useCartActions = () => ({
 
 export const FREE_SHIPPING_THRESHOLD = 60;
 
-export function formatEur(n: number, locale: "fr" | "nl" = "fr"): string {
-  return new Intl.NumberFormat(locale === "fr" ? "fr-BE" : "nl-BE", {
+export function formatEur(n: number): string {
+  return new Intl.NumberFormat("en-IE", {
     style: "currency", currency: "EUR",
   }).format(n);
 }
