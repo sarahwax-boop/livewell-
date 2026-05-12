@@ -307,7 +307,7 @@ nav {
 .filter-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; flex-wrap: wrap; gap: 12px; }
 .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
 .pill {
-  padding: 8px 20px; border-radius: 999px; font-size: 12px; font-weight: 500;
+  padding: 8px 10px; border-radius: 999px; font-size: 11px; font-weight: 500;
   letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
   border: 1px solid rgba(26,25,22,0.25); color: var(--ink2);
   background: transparent; transition: all .2s;
@@ -315,13 +315,13 @@ nav {
 .pill:hover, .pill.active { background: var(--gold); color: #fff; border-color: var(--gold); }
 .sort-sel {
   background: #242424; border: 1px solid rgba(255,255,255,0.15);
-  color: #ede7db; padding: 8px 16px; border-radius: 999px;
+  color: #ede7db; padding: 8px 16px 8px 10px; border-radius: 999px;
   font-family: var(--sans); font-size: 12px; cursor: pointer;
 }
 
 /* ─── Page hero ─────────────────────────────────────────────────── */
-.page-hero { background: var(--dark2); padding: 80px 40px 60px; text-align: center;  background-image: url(/images/hero-below.webp);
-  background-repeat: no-repeat; background-size: cover; }
+.page-hero { background: var(--dark2); padding: 80px 40px 60px; text-align: center; background-image: url(/images/hero-below.webp);
+  background-repeat: no-repeat; background-size: cover;    background-position: right; }
 .page-hero h1 { font-family: var(--serif); font-size: clamp(40px,6vw,72px); font-weight: 300; letter-spacing: -0.03em; color: #fff; margin-bottom: 16px; }
 .page-hero p { font-size: 15px; font-weight: 300; color: rgba(255,255,255,0.5); max-width: 520px; margin: 0 auto; line-height: 1.7; }
 
@@ -498,9 +498,9 @@ h2 { color:var(--dark);}
 .mob-menu-links li { display: block; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.07); }
 .mob-menu-links li a {
   display: block !important; width: 100%; text-align: left;
-  font-family: var(--serif) !important; font-size: 25px; font-weight: 300;
+  font-family: var(--serif) !important; font-size: 18px; font-weight: 300;
   color: rgba(255,255,255,0.82); letter-spacing: -0.01em; line-height: 1.1;
-  padding: 20px 28px; text-decoration: none; position: relative;
+  padding: 16px 44px; text-decoration: none; position: relative;
   box-sizing: border-box; transition: color .22s, background .22s, padding-left .22s;
 }
 .mob-menu-links li a::before {
@@ -509,7 +509,7 @@ h2 { color:var(--dark);}
   background: var(--gold); opacity: 0; transition: opacity .22s;
 }
 .mob-menu-links li a:hover { color: #fff; background: rgba(255,255,255,0.04); padding-left: 38px; }
-.mob-menu-links li a.active { color: var(--gold); background: rgba(200,169,106,0.07); padding-left: 38px; }
+.mob-menu-links li a.active { color: var(--gold); background: rgba(200,169,106,0.07); padding-left: 45px; }
 .mob-menu-links li a.active::before { opacity: 1; }
 .mob-link-num { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font-family: var(--sans); font-size: 11px; font-weight: 400; letter-spacing: 0.08em; color: rgba(255,255,255,0.18); }
 .mob-menu-links li a.active .mob-link-num, .mob-menu-links li a:hover .mob-link-num { color: rgba(200,169,106,0.45); }
@@ -522,7 +522,7 @@ h2 { color:var(--dark);}
 .mob-lang-btn:not(.active):hover { color: #fff; border-color: rgba(255,255,255,0.3); }
 .mob-shop-btn { display: block; width: 100%; padding: 13px 20px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; cursor: pointer; transition: background .2s, border-color .2s, color .2s; text-decoration: none; margin-bottom: 16px; box-sizing: border-box; }
 .mob-shop-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--dark); }
-.mob-menu-tagline { font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.22); line-height: 1.6; }
+.mob-menu-tagline { font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.5); line-height: 1.6; }
 
 /* ─── Product Detail Page ───────────────────────────────────────── */
 .pdp-wrap { max-width: 1200px; margin: 0 auto; padding: 48px 40px 80px; display: grid; grid-template-columns: 55% 1fr; gap: 64px; align-items: start; }
