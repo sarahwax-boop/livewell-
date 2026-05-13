@@ -1,47 +1,17 @@
-import Link from "next/link";
+import SuccessClient from "@/components/SuccessClient";
 import type { Locale } from "@/i18n/routing";
+
 export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ locale: Locale }>;
 }
-// ... rest stays the same
 
-interface Props {
-  params: Promise<{ locale: Locale }>;
-}
 export function generateStaticParams() {
   return [{ locale: "en" }];
 }
 
 export default async function SuccessPage({ params }: Props) {
-  const { locale } = await params;
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "var(--cream)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: 24,
-      }}
-    >
-      <div>
-        <div style={{ fontSize: 64, marginBottom: 24 }}>🎉</div>
-        <h1
-          style={{ fontFamily: "var(--serif)", fontSize: 36, marginBottom: 16 }}
-        >
-          Thank you for your order!
-        </h1>
-        <p style={{ color: "var(--ink2)", marginBottom: 32 }}>
-          You will receive a confirmation email shortly.
-        </p>
-        <Link href="/shop" className="btn btn-dark">
-          Continue shopping
-        </Link>
-      </div>
-    </div>
-  );
+  await params;
+  return <SuccessClient />;
 }

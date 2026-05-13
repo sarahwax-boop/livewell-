@@ -148,6 +148,10 @@ export default function CheckoutClient({ locale }: Props) {
 
     const details = await res.json();
     if (details.status === "COMPLETED") {
+      sessionStorage.setItem(
+        "lastOrder",
+        JSON.stringify({ items, total, shipping: { ...form, phone: `${form.phonePrefix} ${form.phone}` } }),
+      );
       router.push("/checkout/success");
     } else {
       setFormError("Payment failed. Please try again.");
