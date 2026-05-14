@@ -31,73 +31,7 @@ export interface Product {
 }
 
 export const ALL_PRODUCTS: Product[] = [
-  {
-    id: "test",
-    slug: "test",
-    image: "/images/products/radiantglow.webp",
-    gallery: [
-      "/images/products/radiantglow-2.webp",
-      "/images/products/radiantglow-3.webp",
-      "/images/products/radiantglow-4.webp",
-      "/images/products/radiantglow-5.webp",
-    ],
-    bottleClass: "b2",
-    category: ["beauty"],
-    price: 1.00,
-    priceOld: 20.90,
-    save: "20%",
-    rating: 4.7,
-    reviews: 836,
-    featured: true,
-    badge: { en: "New" },
-    affiliateLink: "#",
-    name: { en: "RadiantGlow Gummies" },
-    tagline: { en: "A delicious daily boost for hair, skin and nails." },
-    headline: { en: "Our RadiantGlow elixir sets a new benchmark in nutri-cosmetic science, with a synergy of high-potency bioactive ingredients. This isn't just a supplement — it's the ultimate evolution of your beauty routine." },
-    bullets: {
-      en: [
-        "Supports the natural radiance of hair, skin and nails",
-        "Enriched with biotin, collagen and essential vitamins",
-        "Light, refreshing passion fruit flavour",
-        "Clean formula free from artificial flavourings and colorants",
-      ],
-    },
-    marquee: ["Hair Skin & Nails", "Passion Fruit Flavor", "Clean Formula", "Daily Beauty Support"],
-    whyTitle: { en: "Beauty <em>starts</em> from within." },
-    whyText: {
-      en: ["The missing architecture of your beauty routine. Not an addition, but the definitive foundation. True radiance is a biological by-product of cellular health. RadiantGlow doesn't simply 'cover up' — it rebuilds. By delivering a synergy of marine collagen and high-potency biotin directly to your system, we bypass the limitations of traditional skincare. Discover the distinction of a formula where every milligram is designed to synchronise with your body's natural renewal cycles."],
-    },
-    benefits: [
-      { icon: "✨", title: { en: "Natural glow" }, desc: { en: "Supports a luminous, naturally radiant complexion" } },
-      { icon: "💇", title: { en: "Strong hair" }, desc: { en: "Helps strengthen and nourish hair from within" } },
-      { icon: "💅", title: { en: "Resilient nails" }, desc: { en: "Formula designed for stronger, more resilient nails" } },
-      { icon: "🌸", title: { en: "Hydrated skin" }, desc: { en: "Supports skin elasticity and hydration" } },
-    ],
-    differentiators: [
-      { icon: "🍭", title: { en: "Natural flavour" }, desc: { en: "Natural passion fruit aroma, no added sugars" } },
-      { icon: "✅", title: { en: "Third-party tested" }, desc: { en: "Every batch independently verified for purity" } },
-      { icon: "🌱", title: { en: "Clean ingredients" }, desc: { en: "No artificial colorants, flavourings or preservatives" } },
-      { icon: "💊", title: { en: "Biotin 5000mcg" }, desc: { en: "Clinically studied dose for beauty" } },
-      { icon: "🤝", title: { en: "Marine collagen" }, desc: { en: "Supports skin elasticity and firmness" } },
-      { icon: "🔬", title: { en: "Vitamin C & E" }, desc: { en: "Powerful antioxidants for cellular protection" } },
-    ],
-    ingredients: [
-      { emoji: "💊", name: { en: "Biotin (5,000 mcg)" }, desc: { en: "Essential B vitamin for hair, skin and nail health." } },
-      { emoji: "🌊", name: { en: "Marine Collagen (100 mg)" }, desc: { en: "Highly bioavailable peptides for skin elasticity." } },
-      { emoji: "🍊", name: { en: "Vitamin C & E" }, desc: { en: "Antioxidants that protect cells from oxidative stress." } },
-    ],
-    descriptionHTML: {
-      en: `<p>Our <strong>RadiantGlow Gummies</strong> are a delicious daily boost for hair, skin and nail health.</p><p>Formulated with a refreshing <strong>passion fruit</strong> flavour. No artificial flavourings, no colorants, no preservatives†.</p><p style="font-size:12px;color:var(--ink3);margin-top:12px">† Not evaluated by health authorities.</p>`,
-    },
-    ingredientsHTML: {
-      en: `<p><strong>Active ingredients (per 2 gummies):</strong><br>Vitamin A (as retinyl acetate), Vitamin C (as ascorbic acid), Vitamin D (as cholecalciferol), Vitamin E (as dl-alpha tocopheryl acetate), Vitamin B-6 (as pyridoxine hydrochloride), Folate, Vitamin B-12 (as cyanocobalamin), Biotin, Pantothenic Acid (as calcium d-pantothenate), Iodine (as potassium iodide), Zinc (as zinc citrate), PABA (para-aminobenzoic acid), Collagen (fish), Silicon, Glucose syrup, Sugar, Glucose, Pectin, Citric acid, Sodium citrate, Passion fruit flavour, Vegetable oil (contains carnauba wax), Purple carrot juice concentrate.</p><p><strong>60 gummies · 30 servings</strong></p>`,
-    },
-    safetyHTML: {
-      en: `<p><strong>Directions:</strong> Take 2 gummies per day, preferably with a meal.</p><p><strong>Warning:</strong> Do not exceed the recommended dose. Store in a cool, dry place away from light.</p>`,
-    },
-  },
-
-  {
+   {
     id: "radiantglow",
     slug: "radiantglow",
     image: "/images/products/radiantglow.webp",
