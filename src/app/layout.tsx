@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import RedirectModal from "@/components/RedirectModal";
+import Script from "next/script"; // 1. Imported the optimized Next.js script element
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -62,6 +63,20 @@ export default async function RootLayout({
           <CartDrawer locale="en" />
           <RedirectModal locale="en" />
         </NextIntlClientProvider>
+
+        {/* 2. Google Global Tag (gtag.js) Integration */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18167417606"
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18167417606');
+          `}
+        </Script>
       </body>
     </html>
   );
